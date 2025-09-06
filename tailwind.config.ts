@@ -47,6 +47,14 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        salon: {
+          purple: "hsl(var(--salon-purple))",
+          "purple-dark": "hsl(var(--salon-purple-dark))",
+          green: "hsl(var(--salon-green))",
+          "green-muted": "hsl(var(--salon-green-muted))",
+          card: "hsl(var(--salon-card))",
+          "card-hover": "hsl(var(--salon-card-hover))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
