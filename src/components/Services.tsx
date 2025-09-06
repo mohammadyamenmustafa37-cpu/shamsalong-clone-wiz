@@ -10,7 +10,7 @@ const services = [
   { name: "Herr klippning + Skägg", price: "450kr" },
   { name: "Fade skägg (Herr)", price: "200kr" },
   { name: "Rakning av Skägg", price: "150kr" },
-  { name: "Herrklippning + skägg + tradning och wax", price: "550kr" },
+  { name: "Herrklippning + skägg + trådning och wax", price: "550kr" },
 ];
 
 const Services = () => {

@@ -41,8 +41,8 @@ All colors MUST be HSL.
     /* Custom salon colors */
     --salon-purple: 280 100% 70%;
     --salon-purple-dark: 270 15% 8%;
-    --salon-green: 120 100% 50%;
-    --salon-green-muted: 120 50% 45%;
+    --salon-green: 120 60% 45%;
+    --salon-green-muted: 120 40% 40%;
     --salon-card: 270 15% 12%;
     --salon-card-hover: 270 15% 15%;
 
