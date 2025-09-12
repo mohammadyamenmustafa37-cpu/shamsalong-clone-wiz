@@ -66,7 +66,7 @@ const BookingForm = () => {
       if (error) throw error;
 
       toast({
-        title: "Bokning lyckades!",
+        title: "Bokning bekräftad!",
         description: "Din bokning har registrerats. Vi kommer att bekräfta din tid inom kort.",
       });
 
