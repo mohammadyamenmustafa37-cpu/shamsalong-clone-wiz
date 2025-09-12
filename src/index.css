@@ -8,43 +8,43 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 270 15% 8%;
-    --foreground: 210 40% 98%;
+    --background: 0 0% 6%;
+    --foreground: 0 0% 92%;
 
-    --card: 270 15% 12%;
-    --card-foreground: 210 40% 98%;
+    --card: 0 0% 7%;
+    --card-foreground: 0 0% 92%;
 
-    --popover: 270 15% 12%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 0 0% 7%;
+    --popover-foreground: 0 0% 92%;
 
-    --primary: 280 100% 70%;
-    --primary-foreground: 270 15% 8%;
+    --primary: 280 100% 25%;
+    --primary-foreground: 84 100% 59%;
 
-    --secondary: 270 15% 15%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 0 0% 10%;
+    --secondary-foreground: 0 0% 92%;
 
-    --muted: 270 15% 15%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 0 0% 10%;
+    --muted-foreground: 0 0% 65%;
 
-    --accent: 120 100% 50%;
-    --accent-foreground: 270 15% 8%;
+    --accent: 84 100% 59%;
+    --accent-foreground: 0 0% 7%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 270 15% 20%;
-    --input: 270 15% 20%;
-    --ring: 280 100% 70%;
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
+    --ring: 84 100% 59%;
 
     --radius: 0.75rem;
     
     /* Custom salon colors */
-    --salon-purple: 280 100% 70%;
-    --salon-purple-dark: 270 15% 8%;
-    --salon-green: 120 60% 45%;
-    --salon-green-muted: 120 40% 40%;
-    --salon-card: 270 15% 12%;
-    --salon-card-hover: 270 15% 15%;
+    --salon-purple: 280 100% 25%;
+    --salon-purple-dark: 0 0% 7%;
+    --salon-green: 84 100% 59%;
+    --salon-green-muted: 84 80% 45%;
+    --salon-card: 0 0% 7%;
+    --salon-card-hover: 0 0% 10%;
 
     --sidebar-background: 0 0% 98%;
 
@@ -64,33 +64,33 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 270 15% 8%;
-    --foreground: 210 40% 98%;
+    --background: 0 0% 6%;
+    --foreground: 0 0% 92%;
 
-    --card: 270 15% 12%;
-    --card-foreground: 210 40% 98%;
+    --card: 0 0% 7%;
+    --card-foreground: 0 0% 92%;
 
-    --popover: 270 15% 12%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 0 0% 7%;
+    --popover-foreground: 0 0% 92%;
 
-    --primary: 280 100% 70%;
-    --primary-foreground: 270 15% 8%;
+    --primary: 280 100% 25%;
+    --primary-foreground: 84 100% 59%;
 
-    --secondary: 270 15% 15%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 0 0% 10%;
+    --secondary-foreground: 0 0% 92%;
 
-    --muted: 270 15% 15%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 0 0% 10%;
+    --muted-foreground: 0 0% 65%;
 
-    --accent: 120 100% 50%;
-    --accent-foreground: 270 15% 8%;
+    --accent: 84 100% 59%;
+    --accent-foreground: 0 0% 7%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 270 15% 20%;
-    --input: 270 15% 20%;
-    --ring: 280 100% 70%;
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
+    --ring: 84 100% 59%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -109,5 +109,7 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    background: radial-gradient(circle at top left, hsl(280, 100%, 12%), hsl(0, 0%, 10%));
+    min-height: 100vh;
   }
 }
