@@ -8,8 +8,8 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 220 30% 8%;
-    --foreground: 45 20% 95%;
+    --background: 45 35% 85%;
+    --foreground: 220 30% 15%;
 
     --card: 220 25% 12%;
     --card-foreground: 45 20% 95%;
@@ -64,8 +64,8 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 220 30% 8%;
-    --foreground: 45 20% 95%;
+    --background: 45 35% 85%;
+    --foreground: 220 30% 15%;
 
     --card: 220 25% 12%;
     --card-foreground: 45 20% 95%;
@@ -109,7 +109,7 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
-    background: radial-gradient(circle at top left, hsl(220, 30%, 10%), hsl(220, 35%, 5%));
+    background: radial-gradient(circle at top left, hsl(45, 35%, 90%), hsl(45, 30%, 80%));
     min-height: 100vh;
   }
 }
