@@ -164,6 +164,17 @@ const Login = () => {
             </>
           )}
         </Button>
+
+        <div className="mt-4 text-center">
+          <Button
+            type="button"
+            variant="ghost"
+            className="w-full text-muted-foreground hover:text-foreground"
+            onClick={() => navigate('/')}
+          >
+            Tillbaka till startsidan
+          </Button>
+        </div>
       </Card>
     </div>
   );
