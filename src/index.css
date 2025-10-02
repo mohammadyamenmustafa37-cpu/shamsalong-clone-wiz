@@ -8,43 +8,43 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 220 30% 8%;
-    --foreground: 45 20% 95%;
+    --background: 220 50% 20%;
+    --foreground: 0 0% 100%;
 
-    --card: 220 25% 12%;
-    --card-foreground: 45 20% 95%;
+    --card: 220 50% 25%;
+    --card-foreground: 0 0% 100%;
 
-    --popover: 220 25% 12%;
-    --popover-foreground: 45 20% 95%;
+    --popover: 220 50% 25%;
+    --popover-foreground: 0 0% 100%;
 
-    --primary: 220 30% 15%;
-    --primary-foreground: 45 35% 85%;
+    --primary: 220 60% 35%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 20% 18%;
-    --secondary-foreground: 45 20% 95%;
+    --secondary: 220 50% 30%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 220 20% 18%;
-    --muted-foreground: 45 10% 70%;
+    --muted: 220 40% 30%;
+    --muted-foreground: 220 20% 80%;
 
     --accent: 45 35% 85%;
-    --accent-foreground: 220 30% 15%;
+    --accent-foreground: 220 60% 20%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 220 20% 20%;
-    --input: 220 20% 20%;
+    --border: 220 40% 35%;
+    --input: 220 40% 30%;
     --ring: 45 35% 85%;
 
     --radius: 0.75rem;
     
-    /* Custom salon colors based on logo */
-    --salon-navy: 220 30% 15%;
-    --salon-navy-dark: 220 30% 8%;
+    /* Custom salon colors - Brighter Navy Blue */
+    --salon-navy: 220 60% 35%;
+    --salon-navy-dark: 220 50% 20%;
     --salon-gold: 45 35% 85%;
     --salon-gold-muted: 45 25% 70%;
-    --salon-card: 220 25% 12%;
-    --salon-card-hover: 220 20% 18%;
+    --salon-card: 220 50% 25%;
+    --salon-card-hover: 220 45% 30%;
 
     --sidebar-background: 0 0% 98%;
 
@@ -64,32 +64,32 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 220 30% 8%;
-    --foreground: 45 20% 95%;
+    --background: 220 50% 20%;
+    --foreground: 0 0% 100%;
 
-    --card: 220 25% 12%;
-    --card-foreground: 45 20% 95%;
+    --card: 220 50% 25%;
+    --card-foreground: 0 0% 100%;
 
-    --popover: 220 25% 12%;
-    --popover-foreground: 45 20% 95%;
+    --popover: 220 50% 25%;
+    --popover-foreground: 0 0% 100%;
 
-    --primary: 220 30% 15%;
-    --primary-foreground: 45 35% 85%;
+    --primary: 220 60% 35%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 20% 18%;
-    --secondary-foreground: 45 20% 95%;
+    --secondary: 220 50% 30%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 220 20% 18%;
-    --muted-foreground: 45 10% 70%;
+    --muted: 220 40% 30%;
+    --muted-foreground: 220 20% 80%;
 
     --accent: 45 35% 85%;
-    --accent-foreground: 220 30% 15%;
+    --accent-foreground: 220 60% 20%;
 
     --destructive: 0 63% 31%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 220 20% 20%;
-    --input: 220 20% 20%;
+    --border: 220 40% 35%;
+    --input: 220 40% 30%;
     --ring: 45 35% 85%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
@@ -109,7 +109,7 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
-    background: radial-gradient(circle at top left, hsl(220, 30%, 10%), hsl(220, 35%, 5%));
+    background: radial-gradient(circle at top left, hsl(220, 55%, 25%), hsl(220, 60%, 15%));
     min-height: 100vh;
   }
 }

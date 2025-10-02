@@ -30,9 +30,9 @@ const Admin = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="px-6 py-12">
+      <main className="px-4 md:px-6 py-8 md:py-12">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-4xl font-bold mb-8 text-center text-salon-purple">Admin Panel</h1>
+          <h1 className="text-3xl md:text-4xl font-bold mb-6 md:mb-8 text-center text-salon-gold">Admin Panel</h1>
           <BookingsTable />
         </div>
       </main>
