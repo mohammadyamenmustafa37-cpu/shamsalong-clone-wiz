@@ -8,43 +8,43 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 194 49% 14%;
-    --foreground: 178 59% 54%;
+    --background: 206 47% 9%;
+    --foreground: 249 21% 83%;
 
-    --card: 211 53% 29%;
-    --card-foreground: 178 59% 54%;
+    --card: 216 41% 18%;
+    --card-foreground: 249 21% 83%;
 
-    --popover: 211 53% 29%;
-    --popover-foreground: 178 59% 54%;
+    --popover: 216 41% 18%;
+    --popover-foreground: 249 21% 83%;
 
-    --primary: 225 56% 37%;
-    --primary-foreground: 178 59% 54%;
+    --primary: 208 31% 28%;
+    --primary-foreground: 249 21% 83%;
 
-    --secondary: 211 53% 29%;
-    --secondary-foreground: 202 65% 58%;
+    --secondary: 216 41% 18%;
+    --secondary-foreground: 249 21% 83%;
 
-    --muted: 211 40% 25%;
-    --muted-foreground: 202 55% 50%;
+    --muted: 208 25% 22%;
+    --muted-foreground: 249 15% 70%;
 
-    --accent: 178 59% 54%;
-    --accent-foreground: 194 49% 14%;
+    --accent: 249 21% 83%;
+    --accent-foreground: 206 47% 9%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 211 45% 35%;
-    --input: 211 50% 25%;
-    --ring: 178 59% 54%;
+    --border: 208 31% 35%;
+    --input: 216 41% 15%;
+    --ring: 249 21% 83%;
 
     --radius: 0.75rem;
     
-    /* Custom salon colors - Blue gradient palette */
-    --salon-navy: 225 56% 37%;
-    --salon-navy-dark: 194 49% 14%;
-    --salon-gold: 178 59% 54%;
-    --salon-gold-muted: 202 65% 58%;
-    --salon-card: 211 53% 29%;
-    --salon-card-hover: 225 50% 35%;
+    /* Custom salon colors - Dark blue and lavender palette */
+    --salon-navy: 208 31% 28%;
+    --salon-navy-dark: 206 47% 9%;
+    --salon-gold: 249 21% 83%;
+    --salon-gold-muted: 249 15% 70%;
+    --salon-card: 216 41% 18%;
+    --salon-card-hover: 208 31% 25%;
 
     --sidebar-background: 0 0% 98%;
 
@@ -64,33 +64,33 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 194 49% 14%;
-    --foreground: 178 59% 54%;
+    --background: 206 47% 9%;
+    --foreground: 249 21% 83%;
 
-    --card: 211 53% 29%;
-    --card-foreground: 178 59% 54%;
+    --card: 216 41% 18%;
+    --card-foreground: 249 21% 83%;
 
-    --popover: 211 53% 29%;
-    --popover-foreground: 178 59% 54%;
+    --popover: 216 41% 18%;
+    --popover-foreground: 249 21% 83%;
 
-    --primary: 225 56% 37%;
-    --primary-foreground: 178 59% 54%;
+    --primary: 208 31% 28%;
+    --primary-foreground: 249 21% 83%;
 
-    --secondary: 211 53% 29%;
-    --secondary-foreground: 202 65% 58%;
+    --secondary: 216 41% 18%;
+    --secondary-foreground: 249 21% 83%;
 
-    --muted: 211 40% 25%;
-    --muted-foreground: 202 55% 50%;
+    --muted: 208 25% 22%;
+    --muted-foreground: 249 15% 70%;
 
-    --accent: 178 59% 54%;
-    --accent-foreground: 194 49% 14%;
+    --accent: 249 21% 83%;
+    --accent-foreground: 206 47% 9%;
 
     --destructive: 0 63% 31%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 211 45% 35%;
-    --input: 211 50% 25%;
-    --ring: 178 59% 54%;
+    --border: 208 31% 35%;
+    --input: 216 41% 15%;
+    --ring: 249 21% 83%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -109,7 +109,7 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
-    background: linear-gradient(135deg, hsl(194, 49%, 14%), hsl(211, 53%, 29%), hsl(225, 56%, 37%));
+    background: linear-gradient(135deg, hsl(0, 0%, 0%), hsl(206, 47%, 9%), hsl(216, 41%, 18%));
     min-height: 100vh;
   }
 }
