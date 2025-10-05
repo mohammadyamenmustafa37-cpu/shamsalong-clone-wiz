@@ -56,17 +56,23 @@ const BookingManagement = () => {
 
     setSearchLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('bookings')
-        .select('*')
-        .eq('customer_email', email)
-        .order('preferred_date', { ascending: true });
+      const { data, error } = await supabase.functions.invoke('manage-booking', {
+        body: {
+          action: 'search',
+          email: email.trim().toLowerCase()
+        }
+      });
 
       if (error) throw error;
-
-      setBookings(data || []);
       
-      if (!data || data.length === 0) {
+      if (data?.error) {
+        throw new Error(data.error);
+      }
+
+      const bookings = data?.bookings || [];
+      setBookings(bookings);
+      
+      if (bookings.length === 0) {
         toast({
           title: "Inga bokningar hittades",
           description: "Vi kunde inte hitta några bokningar med den angivna email-adressen.",
@@ -104,12 +110,20 @@ const BookingManagement = () => {
   const saveEdit = async (bookingId: string) => {
     setLoading(true);
     try {
-      const { error } = await supabase
-        .from('bookings')
-        .update(editForm)
-        .eq('id', bookingId);
+      const { data, error } = await supabase.functions.invoke('manage-booking', {
+        body: {
+          action: 'update',
+          email: email.trim().toLowerCase(),
+          bookingId,
+          updates: editForm
+        }
+      });
 
       if (error) throw error;
+      
+      if (data?.error) {
+        throw new Error(data.error);
+      }
 
       // Update local state
       setBookings(bookings.map(booking => 
@@ -144,12 +158,19 @@ const BookingManagement = () => {
 
     setLoading(true);
     try {
-      const { error } = await supabase
-        .from('bookings')
-        .delete()
-        .eq('id', bookingId);
+      const { data, error } = await supabase.functions.invoke('manage-booking', {
+        body: {
+          action: 'delete',
+          email: email.trim().toLowerCase(),
+          bookingId
+        }
+      });
 
       if (error) throw error;
+      
+      if (data?.error) {
+        throw new Error(data.error);
+      }
 
       setBookings(bookings.filter(booking => booking.id !== bookingId));
 
