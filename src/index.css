@@ -8,45 +8,43 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 211 87% 25%;
-    --foreground: 235 31% 93%;
+    --background: 206 47% 9%;
+    --foreground: 249 21% 83%;
 
-    --card: 211 87% 20%;
-    --card-foreground: 235 31% 93%;
+    --card: 216 41% 18%;
+    --card-foreground: 249 21% 83%;
 
-    --popover: 211 87% 20%;
-    --popover-foreground: 235 31% 93%;
+    --popover: 216 41% 18%;
+    --popover-foreground: 249 21% 83%;
 
-    --primary: 161 82% 24%;
-    --primary-foreground: 235 31% 93%;
+    --primary: 208 31% 28%;
+    --primary-foreground: 249 21% 83%;
 
-    --secondary: 211 87% 30%;
-    --secondary-foreground: 235 31% 93%;
+    --secondary: 216 41% 18%;
+    --secondary-foreground: 249 21% 83%;
 
-    --muted: 240 1% 65%;
-    --muted-foreground: 240 1% 45%;
+    --muted: 208 25% 22%;
+    --muted-foreground: 249 15% 70%;
 
-    --accent: 161 82% 24%;
-    --accent-foreground: 235 31% 93%;
+    --accent: 249 21% 83%;
+    --accent-foreground: 206 47% 9%;
 
-    --destructive: 0 100% 41%;
-    --destructive-foreground: 235 31% 93%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 211 87% 35%;
-    --input: 211 87% 18%;
-    --ring: 161 82% 24%;
+    --border: 208 31% 35%;
+    --input: 216 41% 15%;
+    --ring: 249 21% 83%;
 
     --radius: 0.75rem;
     
-    /* Custom salon colors - Yale blue, Dartmouth green, and Ghost white palette */
-    --salon-navy: 211 87% 25%;
-    --salon-navy-dark: 211 87% 15%;
-    --salon-green: 161 82% 24%;
-    --salon-green-light: 161 82% 35%;
-    --salon-ghost-white: 235 31% 93%;
-    --salon-gray: 240 1% 65%;
-    --salon-card: 211 87% 20%;
-    --salon-card-hover: 211 87% 30%;
+    /* Custom salon colors - Dark blue and lavender palette */
+    --salon-navy: 208 31% 28%;
+    --salon-navy-dark: 206 47% 9%;
+    --salon-gold: 249 21% 83%;
+    --salon-gold-muted: 249 15% 70%;
+    --salon-card: 216 41% 18%;
+    --salon-card-hover: 208 31% 25%;
 
     --sidebar-background: 0 0% 98%;
 
@@ -66,33 +64,33 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 211 87% 25%;
-    --foreground: 235 31% 93%;
+    --background: 206 47% 9%;
+    --foreground: 249 21% 83%;
 
-    --card: 211 87% 20%;
-    --card-foreground: 235 31% 93%;
+    --card: 216 41% 18%;
+    --card-foreground: 249 21% 83%;
 
-    --popover: 211 87% 20%;
-    --popover-foreground: 235 31% 93%;
+    --popover: 216 41% 18%;
+    --popover-foreground: 249 21% 83%;
 
-    --primary: 161 82% 24%;
-    --primary-foreground: 235 31% 93%;
+    --primary: 208 31% 28%;
+    --primary-foreground: 249 21% 83%;
 
-    --secondary: 211 87% 30%;
-    --secondary-foreground: 235 31% 93%;
+    --secondary: 216 41% 18%;
+    --secondary-foreground: 249 21% 83%;
 
-    --muted: 240 1% 65%;
-    --muted-foreground: 240 1% 45%;
+    --muted: 208 25% 22%;
+    --muted-foreground: 249 15% 70%;
 
-    --accent: 161 82% 24%;
-    --accent-foreground: 235 31% 93%;
+    --accent: 249 21% 83%;
+    --accent-foreground: 206 47% 9%;
 
-    --destructive: 0 100% 41%;
-    --destructive-foreground: 235 31% 93%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 211 87% 35%;
-    --input: 211 87% 18%;
-    --ring: 161 82% 24%;
+    --border: 208 31% 35%;
+    --input: 216 41% 15%;
+    --ring: 249 21% 83%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -111,7 +109,7 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
-    background: linear-gradient(135deg, hsl(211, 87%, 15%), hsl(211, 87%, 25%), hsl(161, 82%, 24%));
+    background: linear-gradient(135deg, hsl(0, 0%, 0%), hsl(206, 47%, 9%), hsl(216, 41%, 18%));
     min-height: 100vh;
   }
 }
