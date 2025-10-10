@@ -59,11 +59,27 @@ const BookingForm = () => {
     setLoading(true);
     
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('bookings')
-        .insert([formData]);
+        .insert([formData])
+        .select()
+        .single();
 
       if (error) throw error;
+
+      // Send notification email in background (don't wait for it)
+      supabase.functions.invoke('send-booking-notification', {
+        body: {
+          customer_name: formData.customer_name,
+          customer_email: formData.customer_email,
+          customer_phone: formData.customer_phone,
+          service: formData.service,
+          preferred_date: formData.preferred_date,
+          preferred_time: formData.preferred_time,
+          notes: formData.notes,
+          status: 'pending'
+        }
+      }).catch(err => console.error('Error sending notification:', err));
 
       toast({
         title: "Bokning bekräftad!",
