@@ -10,7 +10,37 @@ import {
 } from "@/components/ui/table";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Loader2, Pencil, Trash2 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface Booking {
   id: string;
@@ -25,9 +55,28 @@ interface Booking {
   created_at: string;
 }
 
+const services = [
+  "Fade klippning",
+  "Skäggklippning",
+  "Barn klippning",
+  "Dam klippning",
+  "Maskin klippning",
+];
+
 const BookingsTable = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+  const [editForm, setEditForm] = useState({
+    service: "",
+    preferred_date: "",
+    preferred_time: "",
+    notes: "",
+    status: "",
+  });
+  const { toast } = useToast();
 
   useEffect(() => {
     fetchBookings();
@@ -56,6 +105,85 @@ const BookingsTable = () => {
       case 'cancelled': return 'destructive';
       case 'completed': return 'outline';
       default: return 'secondary';
+    }
+  };
+
+  const handleEdit = (booking: Booking) => {
+    setSelectedBooking(booking);
+    setEditForm({
+      service: booking.service,
+      preferred_date: booking.preferred_date,
+      preferred_time: booking.preferred_time,
+      notes: booking.notes || "",
+      status: booking.status,
+    });
+    setEditDialogOpen(true);
+  };
+
+  const handleDelete = (booking: Booking) => {
+    setSelectedBooking(booking);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!selectedBooking) return;
+
+    try {
+      const { error } = await supabase
+        .from('bookings')
+        .delete()
+        .eq('id', selectedBooking.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Bokning raderad",
+        description: "Bokningen har raderats framgångsrikt.",
+      });
+
+      fetchBookings();
+      setDeleteDialogOpen(false);
+    } catch (error) {
+      console.error('Error deleting booking:', error);
+      toast({
+        title: "Fel",
+        description: "Kunde inte radera bokningen. Försök igen.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const saveEdit = async () => {
+    if (!selectedBooking) return;
+
+    try {
+      const { error } = await supabase
+        .from('bookings')
+        .update({
+          service: editForm.service,
+          preferred_date: editForm.preferred_date,
+          preferred_time: editForm.preferred_time,
+          notes: editForm.notes,
+          status: editForm.status,
+        })
+        .eq('id', selectedBooking.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Bokning uppdaterad",
+        description: "Bokningen har uppdaterats framgångsrikt.",
+      });
+
+      fetchBookings();
+      setEditDialogOpen(false);
+    } catch (error) {
+      console.error('Error updating booking:', error);
+      toast({
+        title: "Fel",
+        description: "Kunde inte uppdatera bokningen. Försök igen.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -90,6 +218,7 @@ const BookingsTable = () => {
                   <TableHead className="text-salon-gold">Tid</TableHead>
                   <TableHead className="text-salon-gold">Status</TableHead>
                   <TableHead className="text-salon-gold">Anteckningar</TableHead>
+                  <TableHead className="text-salon-gold">Åtgärder</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -111,6 +240,24 @@ const BookingsTable = () => {
                     </TableCell>
                     <TableCell className="max-w-xs truncate">
                       {booking.notes || '-'}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleEdit(booking)}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => handleDelete(booking)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -159,12 +306,144 @@ const BookingsTable = () => {
                       </div>
                     )}
                   </div>
+                  
+                  <div className="flex gap-2 pt-3 border-t border-border">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleEdit(booking)}
+                      className="flex-1"
+                    >
+                      <Pencil className="h-4 w-4 mr-2" />
+                      Redigera
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => handleDelete(booking)}
+                      className="flex-1"
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Radera
+                    </Button>
+                  </div>
                 </div>
               </Card>
             ))}
           </div>
         </>
       )}
+
+      {/* Edit Dialog */}
+      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Redigera bokning</DialogTitle>
+            <DialogDescription>
+              Uppdatera bokningsinformation för {selectedBooking?.customer_name}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="service">Tjänst</Label>
+              <Select
+                value={editForm.service}
+                onValueChange={(value) =>
+                  setEditForm({ ...editForm, service: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Välj tjänst" />
+                </SelectTrigger>
+                <SelectContent>
+                  {services.map((service) => (
+                    <SelectItem key={service} value={service}>
+                      {service}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="date">Datum</Label>
+              <Input
+                id="date"
+                type="date"
+                value={editForm.preferred_date}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, preferred_date: e.target.value })
+                }
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="time">Tid</Label>
+              <Input
+                id="time"
+                type="time"
+                value={editForm.preferred_time}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, preferred_time: e.target.value })
+                }
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="status">Status</Label>
+              <Select
+                value={editForm.status}
+                onValueChange={(value) =>
+                  setEditForm({ ...editForm, status: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Välj status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="confirmed">Confirmed</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
+                  <SelectItem value="cancelled">Cancelled</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="notes">Anteckningar</Label>
+              <Textarea
+                id="notes"
+                value={editForm.notes}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, notes: e.target.value })
+                }
+                placeholder="Eventuella anteckningar..."
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditDialogOpen(false)}>
+              Avbryt
+            </Button>
+            <Button onClick={saveEdit}>Spara ändringar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Är du säker?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Detta kommer att permanent radera bokningen för{" "}
+              {selectedBooking?.customer_name}. Denna åtgärd kan inte ångras.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Avbryt</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete}>
+              Radera
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 };
