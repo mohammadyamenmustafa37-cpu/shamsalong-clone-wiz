@@ -24,65 +24,79 @@ const TermsOfService = () => {
           </CardHeader>
           <CardContent className="prose prose-sm max-w-none space-y-6">
             <section>
-              <h2 className="text-2xl font-semibold mb-3">1. Acceptance of Terms</h2>
+              <h2 className="text-2xl font-semibold mb-3">1. Agreement to Terms</h2>
               <p className="text-muted-foreground">
-                By accessing and using Sham Salong's booking services, you accept and agree to be bound by the terms and provision of this agreement.
+                By accessing or using Sham Salong, you agree to be bound by these Terms of Service. If you disagree with any part of these terms, you may not access the service.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-3">2. Use of Service</h2>
+              <h2 className="text-2xl font-semibold mb-3">2. Use License</h2>
               <p className="text-muted-foreground">
-                Our booking service allows you to schedule appointments at Sham Salong. You agree to provide accurate information when making bookings and to notify us of any changes or cancellations in a timely manner.
+                Permission is granted to temporarily access the service for personal, non-commercial use only. This is the grant of a license, not a transfer of title.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-3">3. User Account</h2>
+              <h2 className="text-2xl font-semibold mb-3">3. User Accounts</h2>
               <p className="text-muted-foreground">
-                When you create an account with us, you must provide information that is accurate, complete, and current. You are responsible for safeguarding your account credentials and for any activities or actions under your account.
+                You are responsible for maintaining the confidentiality of your account and password. You agree to accept responsibility for all activities that occur under your account.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-3">4. Booking and Cancellation Policy</h2>
+              <h2 className="text-2xl font-semibold mb-3">4. Prohibited Uses</h2>
               <p className="text-muted-foreground">
-                All bookings are subject to availability. We reserve the right to cancel or reschedule appointments with reasonable notice. Customers are expected to provide at least 24 hours notice for cancellations.
+                You may not use the service for any illegal purpose or to violate any laws. You may not attempt to gain unauthorized access to any portion of the service.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-3">5. Privacy and Data Protection</h2>
+              <h2 className="text-2xl font-semibold mb-3">5. Intellectual Property</h2>
               <p className="text-muted-foreground">
-                We collect and process personal data in accordance with applicable data protection laws. Your information is used solely for booking management and service delivery. We do not share your personal information with third parties without your consent, except as required by law.
+                The service and its original content, features, and functionality are owned by Sham Salong and are protected by international copyright, trademark, and other intellectual property laws.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-3">6. Service Modifications</h2>
+              <h2 className="text-2xl font-semibold mb-3">6. Termination</h2>
               <p className="text-muted-foreground">
-                We reserve the right to modify or discontinue our services at any time without notice. We shall not be liable to you or any third party for any modification, suspension, or discontinuance of the service.
+                We may terminate or suspend your account immediately, without prior notice, for any breach of these Terms. Upon termination, your right to use the service will immediately cease.
               </p>
             </section>
 
             <section>
               <h2 className="text-2xl font-semibold mb-3">7. Limitation of Liability</h2>
               <p className="text-muted-foreground">
-                Sham Salong shall not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use of or inability to use the service.
+                In no event shall Sham Salong be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use of, or inability to use, the service.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-3">8. Changes to Terms</h2>
+              <h2 className="text-2xl font-semibold mb-3">8. Disclaimer</h2>
               <p className="text-muted-foreground">
-                We reserve the right to update these terms at any time. We will notify users of any material changes by posting the new Terms of Service on this page.
+                The service is provided "as is" without any warranties, expressed or implied. We do not warrant that the service will be uninterrupted, timely, secure, or error-free.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-3">9. Contact Information</h2>
+              <h2 className="text-2xl font-semibold mb-3">9. Governing Law</h2>
               <p className="text-muted-foreground">
-                If you have any questions about these Terms of Service, please contact us through our website or visit us at our salon location.
+                These Terms shall be governed by and construed in accordance with applicable laws, without regard to its conflict of law provisions.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-2xl font-semibold mb-3">10. Changes to Terms</h2>
+              <p className="text-muted-foreground">
+                We reserve the right to modify these terms at any time. We will notify users of changes by posting the new Terms of Service on this page with an updated revision date.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-2xl font-semibold mb-3">11. Contact Us</h2>
+              <p className="text-muted-foreground">
+                If you have any questions about these Terms of Service, please contact us through our website.
               </p>
             </section>
           </CardContent>
