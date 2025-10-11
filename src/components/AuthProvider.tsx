@@ -63,6 +63,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       provider: 'google',
       options: {
         redirectTo: `${window.location.origin}/admin`,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        },
       },
     });
     return { error };
