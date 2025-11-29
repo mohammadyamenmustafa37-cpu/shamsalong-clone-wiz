@@ -11,7 +11,7 @@ const Booking = () => {
           <Button
             asChild
             variant="outline" 
-            className="border-salon-green text-salon-green hover:bg-salon-green hover:text-salon-purple-dark mb-4"
+            className="border-secondary text-secondary hover:bg-secondary hover:text-secondary-foreground mb-4"
           >
             <Link to="/manage-booking">
               <Settings className="w-4 h-4 mr-2" />
