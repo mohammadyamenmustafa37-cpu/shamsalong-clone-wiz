@@ -55,6 +55,14 @@ export default {
           card: "hsl(var(--salon-card))",
           "card-hover": "hsl(var(--salon-card-hover))",
         },
+        phosphoric: {
+          DEFAULT: "hsl(111, 100%, 54%)",
+          foreground: "hsl(0, 0%, 0%)",
+        },
+        olive: {
+          DEFAULT: "hsl(82, 39%, 30%)",
+          foreground: "hsl(0, 0%, 100%)",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
