@@ -82,10 +82,10 @@ const Login = () => {
     <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8">
       <Card className="bg-salon-card border-border p-6 md:p-8 w-full max-w-md">
         <div className="mb-6 text-center">
-          <div className="flex items-center justify-center w-16 h-16 bg-primary rounded-full mx-auto mb-4">
-            <Scissors className="w-8 h-8 text-salon-gold" />
+          <div className="flex items-center justify-center w-16 h-16 bg-secondary rounded-full mx-auto mb-4">
+            <Scissors className="w-8 h-8 text-secondary-foreground" />
           </div>
-          <h1 className="text-2xl font-bold text-salon-gold mb-2">Admin Login</h1>
+          <h1 className="text-2xl font-bold text-primary mb-2">Admin Login</h1>
           <p className="text-muted-foreground">Logga in för att hantera bokningar</p>
         </div>
 
@@ -98,7 +98,7 @@ const Login = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="bg-background border-border focus:border-salon-gold"
+              className="bg-background border-border focus:border-primary"
             />
           </div>
 
@@ -110,13 +110,13 @@ const Login = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="bg-background border-border focus:border-salon-gold"
+              className="bg-background border-border focus:border-primary"
             />
           </div>
 
           <Button 
             type="submit" 
-            className="w-full bg-salon-gold hover:bg-salon-gold-muted text-salon-navy font-semibold"
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
             disabled={loading || googleLoading}
           >
             {loading ? (
@@ -135,7 +135,7 @@ const Login = () => {
 
         <div className="relative my-6">
           <Separator />
-          <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-salon-card px-2 text-sm text-muted-foreground">
+          <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-sm text-muted-foreground">
             eller
           </span>
         </div>
@@ -143,7 +143,7 @@ const Login = () => {
         <Button
           type="button"
           variant="outline"
-          className="w-full border-border hover:bg-salon-card-hover"
+          className="w-full border-border hover:bg-secondary/10"
           onClick={handleGoogleSignIn}
           disabled={loading || googleLoading}
         >

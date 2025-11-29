@@ -19,8 +19,8 @@ const Header = () => {
             className="w-16 h-16 md:w-20 md:h-20 object-contain flex-shrink-0"
           />
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-salon-gold">Sham Salong</h1>
-            <p className="text-sm md:text-base text-salon-gold-muted">Oxelösunds bästa frisörsalong</p>
+            <h1 className="text-2xl md:text-3xl font-bold text-primary">Sham Salong</h1>
+            <p className="text-sm md:text-base text-muted-foreground">Oxelösunds bästa frisörsalong</p>
           </div>
         </div>
         
@@ -31,7 +31,7 @@ const Header = () => {
                 <Button
                   asChild
                   variant="outline"
-                  className="border-salon-green text-salon-green hover:bg-salon-green hover:text-salon-purple-dark"
+                  className="border-secondary text-secondary hover:bg-secondary hover:text-secondary-foreground"
                 >
                   <Link to="/">
                     <Home className="w-4 h-4 mr-2" />
@@ -43,7 +43,7 @@ const Header = () => {
                 <Button
                   asChild
                   variant="outline"
-                  className="border-salon-gold text-salon-gold hover:bg-salon-gold hover:text-salon-navy"
+                  className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
                 >
                   <Link to="/admin">
                     <Settings className="w-4 h-4 mr-2" />
@@ -54,7 +54,7 @@ const Header = () => {
               <Button
                 onClick={signOut}
                 variant="outline"
-                className="border-salon-card text-muted-foreground hover:bg-salon-card"
+                className="border-muted text-muted-foreground hover:bg-muted"
               >
                 <LogOut className="w-4 h-4 mr-2" />
                 <span className="hidden sm:inline">Logga ut</span>
@@ -64,7 +64,7 @@ const Header = () => {
             <Button
               asChild
               variant="outline"
-              className="border-salon-gold text-salon-gold hover:bg-salon-gold hover:text-salon-navy"
+              className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
             >
               <Link to="/login">
                 <LogIn className="w-4 h-4 mr-2" />
