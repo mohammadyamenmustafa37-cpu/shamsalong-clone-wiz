@@ -10,6 +10,7 @@ import Login from "./pages/Login";
 import OAuthConsent from "./pages/OAuthConsent";
 import ManageBooking from "./pages/ManageBooking";
 import TermsOfService from "./pages/TermsOfService";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
             <Route path="/oauth/consent" element={<OAuthConsent />} />
             <Route path="/manage-booking" element={<ManageBooking />} />
             <Route path="/terms-of-service" element={<TermsOfService />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
