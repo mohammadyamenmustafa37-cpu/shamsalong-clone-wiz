@@ -13,6 +13,10 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        display: ['Playfair Display', 'Georgia', 'serif'],
+        body: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -47,22 +51,6 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        salon: {
-          purple: "hsl(var(--salon-purple))",
-          "purple-dark": "hsl(var(--salon-purple-dark))",
-          green: "hsl(var(--salon-green))",
-          "green-muted": "hsl(var(--salon-green-muted))",
-          card: "hsl(var(--salon-card))",
-          "card-hover": "hsl(var(--salon-card-hover))",
-        },
-        phosphoric: {
-          DEFAULT: "hsl(111, 100%, 54%)",
-          foreground: "hsl(0, 0%, 0%)",
-        },
-        olive: {
-          DEFAULT: "hsl(82, 39%, 30%)",
-          foreground: "hsl(0, 0%, 100%)",
-        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -96,10 +84,30 @@ export default {
             height: "0",
           },
         },
+        "fade-up": {
+          "0%": {
+            opacity: "0",
+            transform: "translateY(20px)",
+          },
+          "100%": {
+            opacity: "1",
+            transform: "translateY(0)",
+          },
+        },
+        "fade-in": {
+          "0%": {
+            opacity: "0",
+          },
+          "100%": {
+            opacity: "1",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "fade-up": "fade-up 0.6s ease-out forwards",
+        "fade-in": "fade-in 0.5s ease-out forwards",
       },
     },
   },

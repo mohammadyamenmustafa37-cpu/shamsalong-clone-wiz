@@ -1,18 +1,42 @@
+import { Button } from "@/components/ui/button";
+import heroImage from "@/assets/hero-barber.jpg";
+
 const Hero = () => {
+  const scrollToBooking = () => {
+    const bookingSection = document.getElementById('booking');
+    if (bookingSection) {
+      bookingSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
-    <section className="px-4 md:px-6 pb-8 md:pb-12">
-      <div className="max-w-4xl">
-        <p className="text-base md:text-lg leading-relaxed mb-4 md:mb-6">
-          <span className="text-primary font-semibold">Sham Salong</span>, det bästa i Oxelösund.
+    <section className="relative min-h-[70vh] md:min-h-[80vh] flex items-center justify-center overflow-hidden">
+      {/* Background Image */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${heroImage})` }}
+      />
+      
+      {/* Dark Overlay */}
+      <div className="absolute inset-0 hero-overlay" />
+      
+      {/* Content */}
+      <div className="relative z-10 text-center px-4 md:px-6 max-w-4xl mx-auto animate-fade-up">
+        <h2 className="font-display text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-foreground mb-6 leading-tight">
+          Expertis i varje klipp
+        </h2>
+        <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
+          Vi hör på <span className="text-primary font-semibold">Shamsalong</span> erbjuder de bästa frisyrerna 
+          du kommer någonsin att få. Inga kompromisser får ske och du som kund ska ha det bästa. 
+          Vår salong ligger på <span className="text-primary">Esplanaden 1B</span> Oxelösund.
         </p>
-        <p className="text-muted-foreground leading-relaxed mb-3 md:mb-4 text-sm md:text-base">
-          Vi erbjuder de bästa tjänsterna men samtidigt till ödmjuka priser. Inga kompromisser med en hög standard du bara hittar hos oss!
-        </p>
-        <p className="text-muted-foreground leading-relaxed text-sm md:text-base">
-          Oavsett om du vill klippa dig eller färga håret så fixar vi det. Du hittar oss på{" "}
-          <span className="text-primary">Esplanaden 1B</span> och vi har öppet{" "}
-          <span className="text-primary">alla dagar 10:00 – 19:00</span>.
-        </p>
+        <Button 
+          onClick={scrollToBooking}
+          size="lg" 
+          className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-lg px-8 py-6 rounded-md transition-all duration-300 hover:scale-105"
+        >
+          Boka nu
+        </Button>
       </div>
     </section>
   );
