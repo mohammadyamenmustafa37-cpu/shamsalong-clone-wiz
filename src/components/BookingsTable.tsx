@@ -56,16 +56,16 @@ interface Booking {
 }
 
 const services = [
-  "Fade klippning",
-  "Skäggklippning",
-  "Barn klippning",
-  "Dam klippning",
-  "Maskin klippning",
+  "Herrklippning (Haircut)",
+  "Skäggtrimning (Beard Trim)",
+  "Hårfärgning (Hair Coloring)",
+  "Klippning + Skägg (Haircut + Beard)",
+  "Premium styling",
 ];
 
 const BookingsTable = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
@@ -84,7 +84,8 @@ const BookingsTable = () => {
 
   const fetchBookings = async () => {
     try {
-      const { data, error } = await supabase
+      // Use type assertion to bypass TypeScript error until types are regenerated
+      const { data, error } = await (supabase as any)
         .from('bookings')
         .select('*')
         .order('created_at', { ascending: false });
@@ -129,7 +130,8 @@ const BookingsTable = () => {
     if (!selectedBooking) return;
 
     try {
-      const { error } = await supabase
+      // Use type assertion to bypass TypeScript error until types are regenerated
+      const { error } = await (supabase as any)
         .from('bookings')
         .delete()
         .eq('id', selectedBooking.id);
@@ -157,7 +159,8 @@ const BookingsTable = () => {
     if (!selectedBooking) return;
 
     try {
-      const { error } = await supabase
+      // Use type assertion to bypass TypeScript error until types are regenerated
+      const { error } = await (supabase as any)
         .from('bookings')
         .update({
           service: editForm.service,
@@ -190,14 +193,14 @@ const BookingsTable = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <Loader2 className="h-8 w-8 animate-spin text-salon-purple" />
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
   return (
-    <Card className="bg-salon-card border-salon-card p-4 md:p-6">
-      <h2 className="text-2xl font-bold mb-6 text-salon-gold">Bokningar</h2>
+    <Card className="bg-card border-border p-4 md:p-6">
+      <h2 className="font-display text-2xl font-bold mb-6 text-foreground">Bokningar</h2>
       
       {bookings.length === 0 ? (
         <p className="text-muted-foreground text-center py-8">
@@ -209,23 +212,23 @@ const BookingsTable = () => {
           <div className="hidden lg:block overflow-auto">
             <Table>
               <TableHeader>
-                <TableRow className="border-border hover:bg-salon-card-hover">
-                  <TableHead className="text-salon-gold">Namn</TableHead>
-                  <TableHead className="text-salon-gold">Email</TableHead>
-                  <TableHead className="text-salon-gold">Telefon</TableHead>
-                  <TableHead className="text-salon-gold">Tjänst</TableHead>
-                  <TableHead className="text-salon-gold">Datum</TableHead>
-                  <TableHead className="text-salon-gold">Tid</TableHead>
-                  <TableHead className="text-salon-gold">Status</TableHead>
-                  <TableHead className="text-salon-gold">Anteckningar</TableHead>
-                  <TableHead className="text-salon-gold">Åtgärder</TableHead>
+                <TableRow className="border-border hover:bg-secondary/20">
+                  <TableHead className="text-primary">Namn</TableHead>
+                  <TableHead className="text-primary">Email</TableHead>
+                  <TableHead className="text-primary">Telefon</TableHead>
+                  <TableHead className="text-primary">Tjänst</TableHead>
+                  <TableHead className="text-primary">Datum</TableHead>
+                  <TableHead className="text-primary">Tid</TableHead>
+                  <TableHead className="text-primary">Status</TableHead>
+                  <TableHead className="text-primary">Anteckningar</TableHead>
+                  <TableHead className="text-primary">Åtgärder</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {bookings.map((booking) => (
                   <TableRow 
                     key={booking.id}
-                    className="border-border hover:bg-salon-card-hover"
+                    className="border-border hover:bg-secondary/20"
                   >
                     <TableCell className="font-medium">{booking.customer_name}</TableCell>
                     <TableCell>{booking.customer_email}</TableCell>
@@ -283,25 +286,25 @@ const BookingsTable = () => {
                   <div className="space-y-2 text-sm">
                     {booking.customer_phone && (
                       <div className="flex justify-between">
-                        <span className="text-salon-gold font-medium">Telefon:</span>
+                        <span className="text-primary font-medium">Telefon:</span>
                         <span>{booking.customer_phone}</span>
                       </div>
                     )}
                     <div className="flex justify-between">
-                      <span className="text-salon-gold font-medium">Tjänst:</span>
+                      <span className="text-primary font-medium">Tjänst:</span>
                       <span>{booking.service}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-salon-gold font-medium">Datum:</span>
+                      <span className="text-primary font-medium">Datum:</span>
                       <span>{new Date(booking.preferred_date).toLocaleDateString('sv-SE')}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-salon-gold font-medium">Tid:</span>
+                      <span className="text-primary font-medium">Tid:</span>
                       <span>{booking.preferred_time}</span>
                     </div>
                     {booking.notes && (
                       <div className="pt-2 border-t border-border">
-                        <span className="text-salon-gold font-medium">Anteckningar:</span>
+                        <span className="text-primary font-medium">Anteckningar:</span>
                         <p className="mt-1 text-muted-foreground">{booking.notes}</p>
                       </div>
                     )}
@@ -336,9 +339,9 @@ const BookingsTable = () => {
 
       {/* Edit Dialog */}
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-        <DialogContent className="sm:max-w-[500px]">
+        <DialogContent className="sm:max-w-[500px] bg-card border-border">
           <DialogHeader>
-            <DialogTitle>Redigera bokning</DialogTitle>
+            <DialogTitle className="font-display">Redigera bokning</DialogTitle>
             <DialogDescription>
               Uppdatera bokningsinformation för {selectedBooking?.customer_name}
             </DialogDescription>
@@ -352,10 +355,10 @@ const BookingsTable = () => {
                   setEditForm({ ...editForm, service: value })
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger className="bg-input border-border">
                   <SelectValue placeholder="Välj tjänst" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-popover border-border">
                   {services.map((service) => (
                     <SelectItem key={service} value={service}>
                       {service}
@@ -373,6 +376,7 @@ const BookingsTable = () => {
                 onChange={(e) =>
                   setEditForm({ ...editForm, preferred_date: e.target.value })
                 }
+                className="bg-input border-border"
               />
             </div>
             <div className="grid gap-2">
@@ -384,6 +388,7 @@ const BookingsTable = () => {
                 onChange={(e) =>
                   setEditForm({ ...editForm, preferred_time: e.target.value })
                 }
+                className="bg-input border-border"
               />
             </div>
             <div className="grid gap-2">
@@ -394,10 +399,10 @@ const BookingsTable = () => {
                   setEditForm({ ...editForm, status: value })
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger className="bg-input border-border">
                   <SelectValue placeholder="Välj status" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-popover border-border">
                   <SelectItem value="pending">Pending</SelectItem>
                   <SelectItem value="confirmed">Confirmed</SelectItem>
                   <SelectItem value="completed">Completed</SelectItem>
@@ -414,6 +419,7 @@ const BookingsTable = () => {
                   setEditForm({ ...editForm, notes: e.target.value })
                 }
                 placeholder="Eventuella anteckningar..."
+                className="bg-input border-border"
               />
             </div>
           </div>
@@ -421,16 +427,18 @@ const BookingsTable = () => {
             <Button variant="outline" onClick={() => setEditDialogOpen(false)}>
               Avbryt
             </Button>
-            <Button onClick={saveEdit}>Spara ändringar</Button>
+            <Button onClick={saveEdit} className="bg-primary hover:bg-primary/90">
+              Spara ändringar
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent className="bg-card border-border">
           <AlertDialogHeader>
-            <AlertDialogTitle>Är du säker?</AlertDialogTitle>
+            <AlertDialogTitle className="font-display">Är du säker?</AlertDialogTitle>
             <AlertDialogDescription>
               Detta kommer att permanent radera bokningen för{" "}
               {selectedBooking?.customer_name}. Denna åtgärd kan inte ångras.
@@ -438,7 +446,7 @@ const BookingsTable = () => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Avbryt</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete}>
+            <AlertDialogAction onClick={confirmDelete} className="bg-destructive hover:bg-destructive/90">
               Radera
             </AlertDialogAction>
           </AlertDialogFooter>

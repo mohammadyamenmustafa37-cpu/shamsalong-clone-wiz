@@ -5,20 +5,21 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, Clock } from "lucide-react";
+import { Calendar, Clock, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 const services = [
-  "Pensionär klippning (Herr)",
-  "Pensionär klippning (Dam)",
-  "Fade klippning (Herr)",
-  "Fade klippning (Barn)",
-  "Herr klippning",
-  "Herr klippning + Skägg",
-  "Fade skägg (Herr)",
-  "Rakning av Skägg",
-  "Herrklippning + skägg + trådning och wax",
+  "Herrklippning (Haircut)",
+  "Skäggtrimning (Beard Trim)",
+  "Hårfärgning (Hair Coloring)",
+  "Klippning + Skägg (Haircut + Beard)",
+  "Premium styling",
+];
+
+const timeSlots = [
+  "09:00", "10:00", "11:00", "12:00", "13:00", 
+  "14:00", "15:00", "16:00", "17:00", "18:00"
 ];
 
 const BookingForm = () => {
@@ -26,11 +27,9 @@ const BookingForm = () => {
   const [formData, setFormData] = useState({
     customer_name: "",
     customer_email: "",
-    customer_phone: "",
     service: "",
     preferred_date: "",
     preferred_time: "",
-    notes: "",
   });
   const [loading, setLoading] = useState(false);
 
@@ -39,8 +38,8 @@ const BookingForm = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSelectChange = (value: string) => {
-    setFormData(prev => ({ ...prev, service: value }));
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -59,7 +58,8 @@ const BookingForm = () => {
     setLoading(true);
     
     try {
-      const { data, error } = await supabase
+      // Use type assertion to bypass TypeScript error until types are regenerated
+      const { data, error } = await (supabase as any)
         .from('bookings')
         .insert([formData])
         .select()
@@ -72,11 +72,9 @@ const BookingForm = () => {
         body: {
           customer_name: formData.customer_name,
           customer_email: formData.customer_email,
-          customer_phone: formData.customer_phone,
           service: formData.service,
           preferred_date: formData.preferred_date,
           preferred_time: formData.preferred_time,
-          notes: formData.notes,
           status: 'pending'
         }
       }).catch(err => console.error('Error sending notification:', err));
@@ -90,11 +88,9 @@ const BookingForm = () => {
       setFormData({
         customer_name: "",
         customer_email: "",
-        customer_phone: "",
         service: "",
         preferred_date: "",
         preferred_time: "",
-        notes: "",
       });
     } catch (error) {
       console.error('Error creating booking:', error);
@@ -109,75 +105,77 @@ const BookingForm = () => {
   };
 
   return (
-    <section className="px-6 py-12">
-      <Card className="bg-salon-card border-salon-card p-8 max-w-2xl mx-auto">
-        <div className="mb-6 text-center">
-          <Calendar className="w-16 h-16 text-salon-purple mx-auto mb-4" />
-          <h2 className="text-3xl font-bold mb-4">Boka Tid</h2>
-          <p className="text-muted-foreground text-lg">
-            Fyll i formuläret nedan för att boka din tid. Vi bekräftar din bokning via email.
+    <section id="booking" className="px-4 md:px-6 py-12 md:py-20 bg-card/30">
+      <div className="max-w-2xl mx-auto">
+        <div className="text-center mb-10 md:mb-14">
+          <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-foreground">
+            Boka Din Tid
+          </h2>
+          <p className="text-lg md:text-xl text-muted-foreground">
+            Fyll i formuläret nedan för att boka din tid
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card className="bg-card border-border p-6 md:p-8">
+          <form onSubmit={handleSubmit} className="space-y-5 md:space-y-6">
             <div>
-              <Label htmlFor="customer_name">Namn *</Label>
+              <Label htmlFor="customer_name" className="text-foreground font-medium">
+                Namn
+              </Label>
               <Input
                 id="customer_name"
                 name="customer_name"
                 type="text"
                 value={formData.customer_name}
                 onChange={handleInputChange}
+                placeholder="Ditt namn"
                 required
-                className="bg-background border-salon-card focus:border-salon-green"
+                className="mt-1.5 bg-input border-border focus:border-primary focus:ring-primary"
               />
             </div>
+
             <div>
-              <Label htmlFor="customer_email">Email *</Label>
+              <Label htmlFor="customer_email" className="text-foreground font-medium">
+                E-post
+              </Label>
               <Input
                 id="customer_email"
                 name="customer_email"
                 type="email"
                 value={formData.customer_email}
                 onChange={handleInputChange}
+                placeholder="din@email.com"
                 required
-                className="bg-background border-salon-card focus:border-salon-green"
+                className="mt-1.5 bg-input border-border focus:border-primary focus:ring-primary"
               />
             </div>
-          </div>
 
-          <div>
-            <Label htmlFor="customer_phone">Telefonnummer</Label>
-            <Input
-              id="customer_phone"
-              name="customer_phone"
-              type="tel"
-              value={formData.customer_phone}
-              onChange={handleInputChange}
-              className="bg-background border-salon-card focus:border-salon-green"
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="service">Välj tjänst *</Label>
-            <Select onValueChange={handleSelectChange} value={formData.service}>
-              <SelectTrigger className="bg-background border-salon-card focus:border-salon-green">
-                <SelectValue placeholder="Välj en tjänst" />
-              </SelectTrigger>
-              <SelectContent className="bg-salon-card border-salon-card">
-                {services.map((service) => (
-                  <SelectItem key={service} value={service} className="hover:bg-salon-card-hover">
-                    {service}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="preferred_date">Önskat datum *</Label>
+              <Label htmlFor="service" className="text-foreground font-medium">
+                Tjänst
+              </Label>
+              <Select onValueChange={(value) => handleSelectChange('service', value)} value={formData.service}>
+                <SelectTrigger className="mt-1.5 bg-input border-border focus:border-primary focus:ring-primary">
+                  <SelectValue placeholder="Välj en tjänst" />
+                </SelectTrigger>
+                <SelectContent className="bg-popover border-border">
+                  {services.map((service) => (
+                    <SelectItem 
+                      key={service} 
+                      value={service} 
+                      className="hover:bg-secondary focus:bg-secondary"
+                    >
+                      {service}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="preferred_date" className="text-foreground font-medium">
+                Datum
+              </Label>
               <Input
                 id="preferred_date"
                 name="preferred_date"
@@ -185,52 +183,50 @@ const BookingForm = () => {
                 value={formData.preferred_date}
                 onChange={handleInputChange}
                 required
-                className="bg-background border-salon-card focus:border-salon-green"
+                className="mt-1.5 bg-input border-border focus:border-primary focus:ring-primary"
               />
             </div>
+
             <div>
-              <Label htmlFor="preferred_time">Önskad tid *</Label>
-              <Input
-                id="preferred_time"
-                name="preferred_time"
-                type="time"
-                value={formData.preferred_time}
-                onChange={handleInputChange}
-                required
-                className="bg-background border-salon-card focus:border-salon-green"
-              />
+              <Label htmlFor="preferred_time" className="text-foreground font-medium">
+                Tid
+              </Label>
+              <Select onValueChange={(value) => handleSelectChange('preferred_time', value)} value={formData.preferred_time}>
+                <SelectTrigger className="mt-1.5 bg-input border-border focus:border-primary focus:ring-primary">
+                  <SelectValue placeholder="Välj tid" />
+                </SelectTrigger>
+                <SelectContent className="bg-popover border-border">
+                  {timeSlots.map((time) => (
+                    <SelectItem 
+                      key={time} 
+                      value={time} 
+                      className="hover:bg-secondary focus:bg-secondary"
+                    >
+                      {time}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-          </div>
 
-          <div>
-            <Label htmlFor="notes">Anteckningar</Label>
-            <Textarea
-              id="notes"
-              name="notes"
-              value={formData.notes}
-              onChange={handleInputChange}
-              placeholder="Eventuella önskemål eller anteckningar..."
-              className="bg-background border-salon-card focus:border-salon-green min-h-[100px]"
-            />
-          </div>
-
-          <Button 
-            type="submit"
-            size="lg" 
-            className="w-full bg-salon-green hover:bg-salon-green-muted text-salon-purple-dark font-semibold text-lg py-6"
-            disabled={loading}
-          >
-            {loading ? (
-              <>
-                <Clock className="w-4 h-4 mr-2 animate-spin" />
-                Skickar bokning...
-              </>
-            ) : (
-              "Boka Nu"
-            )}
-          </Button>
-        </form>
-      </Card>
+            <Button 
+              type="submit"
+              size="lg" 
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-lg py-6 mt-4"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  Skickar bokning...
+                </>
+              ) : (
+                "Bekräfta bokning"
+              )}
+            </Button>
+          </form>
+        </Card>
+      </div>
     </section>
   );
 };

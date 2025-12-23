@@ -5,13 +5,14 @@ import BookingForm from "./BookingForm";
 
 const Booking = () => {
   return (
-    <section id="booking">
-      <div className="px-6 pb-6">
+    <section>
+      <BookingForm />
+      <div className="px-4 md:px-6 pb-12">
         <div className="max-w-2xl mx-auto text-center">
           <Button
             asChild
             variant="outline" 
-            className="border-secondary text-secondary hover:bg-secondary hover:text-secondary-foreground mb-4"
+            className="border-border text-muted-foreground hover:bg-secondary hover:text-foreground"
           >
             <Link to="/manage-booking">
               <Settings className="w-4 h-4 mr-2" />
@@ -20,7 +21,6 @@ const Booking = () => {
           </Button>
         </div>
       </div>
-      <BookingForm />
     </section>
   );
 };

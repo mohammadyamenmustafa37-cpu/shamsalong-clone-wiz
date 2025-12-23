@@ -2,7 +2,6 @@ import { LogIn, LogOut, Settings, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/components/AuthProvider";
 import { Link, useLocation } from "react-router-dom";
-import shamSalongLogo from "@/assets/sham-salong-logo.jpeg";
 
 const Header = () => {
   const { user, signOut } = useAuth();
@@ -10,28 +9,23 @@ const Header = () => {
   const isAdminPage = location.pathname === '/admin';
 
   return (
-    <header className="py-4 md:py-8 px-4 md:px-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3 md:gap-4">
-          <img 
-            src={shamSalongLogo} 
-            alt="Sham Salong Logo" 
-            className="w-16 h-16 md:w-20 md:h-20 object-contain flex-shrink-0"
-          />
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-primary">Sham Salong</h1>
-            <p className="text-sm md:text-base text-muted-foreground">Oxelösunds bästa frisörsalong</p>
-          </div>
-        </div>
+    <header className="absolute top-0 left-0 right-0 z-50 py-4 md:py-6 px-4 md:px-8">
+      <div className="max-w-7xl mx-auto flex items-center justify-between">
+        <Link to="/" className="flex items-center gap-2 group">
+          <span className="font-display text-2xl md:text-3xl font-bold text-primary group-hover:text-primary/80 transition-colors">
+            Shamsalong
+          </span>
+        </Link>
         
-        <div className="flex items-center gap-2 flex-wrap self-end sm:self-auto">
+        <div className="flex items-center gap-2 md:gap-3">
           {user ? (
             <>
               {isAdminPage && (
                 <Button
                   asChild
-                  variant="outline"
-                  className="border-secondary text-secondary hover:bg-secondary hover:text-secondary-foreground"
+                  variant="ghost"
+                  size="sm"
+                  className="text-foreground/80 hover:text-foreground hover:bg-foreground/10"
                 >
                   <Link to="/">
                     <Home className="w-4 h-4 mr-2" />
@@ -42,8 +36,9 @@ const Header = () => {
               {!isAdminPage && (
                 <Button
                   asChild
-                  variant="outline"
-                  className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+                  variant="ghost"
+                  size="sm"
+                  className="text-foreground/80 hover:text-foreground hover:bg-foreground/10"
                 >
                   <Link to="/admin">
                     <Settings className="w-4 h-4 mr-2" />
@@ -53,8 +48,9 @@ const Header = () => {
               )}
               <Button
                 onClick={signOut}
-                variant="outline"
-                className="border-muted text-muted-foreground hover:bg-muted"
+                variant="ghost"
+                size="sm"
+                className="text-foreground/80 hover:text-foreground hover:bg-foreground/10"
               >
                 <LogOut className="w-4 h-4 mr-2" />
                 <span className="hidden sm:inline">Logga ut</span>
@@ -64,7 +60,8 @@ const Header = () => {
             <Button
               asChild
               variant="outline"
-              className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+              size="sm"
+              className="border-foreground/20 text-foreground hover:bg-foreground/10 hover:border-foreground/40"
             >
               <Link to="/login">
                 <LogIn className="w-4 h-4 mr-2" />

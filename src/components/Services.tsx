@@ -15,31 +15,40 @@ const services = [
 
 const Services = () => {
   return (
-    <section className="px-4 md:px-6 py-8 md:py-12">
-      <div className="text-center mb-8 md:mb-12">
-        <h2 className="text-3xl md:text-4xl font-bold mb-3 md:mb-4">Våra Tjänster</h2>
-        <p className="text-base md:text-xl text-muted-foreground px-4">
-          Professionell hårklippning och styling med högsta kvalitet till rättvisa priser
-        </p>
-      </div>
-      
-      <div className="max-w-4xl mx-auto space-y-3 md:space-y-4">
-        {services.map((service, index) => (
-          <Card 
-            key={index} 
-            className="bg-card border-border hover:bg-secondary/10 transition-colors p-4 md:p-6 group cursor-pointer"
-          >
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
-                <div className="flex items-center justify-center w-8 h-8 md:w-10 md:h-10 bg-primary/20 rounded-lg group-hover:bg-primary/30 transition-colors flex-shrink-0">
-                  <Scissors className="w-4 h-4 md:w-5 md:h-5 text-primary" />
+    <section className="px-4 md:px-6 py-12 md:py-20 bg-background">
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center mb-10 md:mb-14">
+          <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-foreground">
+            Våra Tjänster
+          </h2>
+          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+            Professionell hårklippning och styling med högsta kvalitet till rättvisa priser
+          </p>
+        </div>
+        
+        <div className="space-y-3 md:space-y-4">
+          {services.map((service, index) => (
+            <Card 
+              key={index} 
+              className="bg-card border-border hover:bg-secondary/20 transition-all duration-300 p-4 md:p-6 group cursor-pointer animate-fade-up"
+              style={{ animationDelay: `${index * 50}ms` }}
+            >
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
+                  <div className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-primary/20 rounded-lg group-hover:bg-primary/30 transition-colors flex-shrink-0">
+                    <Scissors className="w-5 h-5 md:w-6 md:h-6 text-primary" />
+                  </div>
+                  <span className="text-base md:text-lg font-medium text-foreground truncate">
+                    {service.name}
+                  </span>
                 </div>
-                <span className="text-sm md:text-lg font-medium truncate">{service.name}</span>
+                <span className="text-lg md:text-xl font-bold text-primary whitespace-nowrap">
+                  {service.price}
+                </span>
               </div>
-              <span className="text-lg md:text-xl font-bold text-primary whitespace-nowrap">{service.price}</span>
-            </div>
-          </Card>
-        ))}
+            </Card>
+          ))}
+        </div>
       </div>
     </section>
   );
