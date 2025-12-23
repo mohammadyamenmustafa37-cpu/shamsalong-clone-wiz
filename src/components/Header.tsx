@@ -9,23 +9,23 @@ const Header = () => {
   const isAdminPage = location.pathname === '/admin';
 
   return (
-    <header className="absolute top-0 left-0 right-0 z-50 py-4 md:py-6 px-4 md:px-8">
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 group">
-          <span className="font-display text-2xl md:text-3xl font-bold text-primary group-hover:text-primary/80 transition-colors">
+    <header className="fixed top-0 left-0 right-0 z-50 py-5 px-6 md:px-8 bg-background/80 backdrop-blur-sm border-b border-border/50">
+      <div className="max-w-6xl mx-auto flex items-center justify-between">
+        <Link to="/" className="group">
+          <span className="font-display text-2xl md:text-3xl font-semibold text-primary">
             Shamsalong
           </span>
         </Link>
         
-        <div className="flex items-center gap-2 md:gap-3">
+        <div className="flex items-center gap-3">
           {user ? (
             <>
               {isAdminPage && (
                 <Button
                   asChild
-                  variant="ghost"
+                  variant="outline"
                   size="sm"
-                  className="text-foreground/80 hover:text-foreground hover:bg-foreground/10"
+                  className="border-border text-foreground hover:bg-secondary"
                 >
                   <Link to="/">
                     <Home className="w-4 h-4 mr-2" />
@@ -36,9 +36,9 @@ const Header = () => {
               {!isAdminPage && (
                 <Button
                   asChild
-                  variant="ghost"
+                  variant="outline"
                   size="sm"
-                  className="text-foreground/80 hover:text-foreground hover:bg-foreground/10"
+                  className="border-border text-foreground hover:bg-secondary"
                 >
                   <Link to="/admin">
                     <Settings className="w-4 h-4 mr-2" />
@@ -48,9 +48,9 @@ const Header = () => {
               )}
               <Button
                 onClick={signOut}
-                variant="ghost"
+                variant="outline"
                 size="sm"
-                className="text-foreground/80 hover:text-foreground hover:bg-foreground/10"
+                className="border-border text-foreground hover:bg-secondary"
               >
                 <LogOut className="w-4 h-4 mr-2" />
                 <span className="hidden sm:inline">Logga ut</span>
@@ -61,11 +61,11 @@ const Header = () => {
               asChild
               variant="outline"
               size="sm"
-              className="border-foreground/20 text-foreground hover:bg-foreground/10 hover:border-foreground/40"
+              className="border-border text-foreground hover:bg-secondary uppercase text-xs tracking-wider font-semibold"
             >
               <Link to="/login">
                 <LogIn className="w-4 h-4 mr-2" />
-                <span className="hidden sm:inline">Admin Login</span>
+                Admin
               </Link>
             </Button>
           )}
