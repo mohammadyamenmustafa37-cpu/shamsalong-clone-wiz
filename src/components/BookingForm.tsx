@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -23,15 +24,17 @@ const timeSlots = [
 const BookingForm = () => {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
-    customer_name: "",
-    customer_email: "",
+    name: "",
+    email: "",
+    phone: "",
     service: "",
-    preferred_date: "",
-    preferred_time: "",
+    date: "",
+    time: "",
+    message: "",
   });
   const [loading, setLoading] = useState(false);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
@@ -43,11 +46,11 @@ const BookingForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.customer_name || !formData.customer_email || !formData.service || 
-        !formData.preferred_date || !formData.preferred_time) {
+    if (!formData.name || !formData.email || !formData.phone || !formData.service || 
+        !formData.date || !formData.time) {
       toast({
         title: "Fel",
-        description: "Vänligen fyll i alla fält.",
+        description: "Vänligen fyll i alla obligatoriska fält.",
         variant: "destructive",
       });
       return;
@@ -56,36 +59,45 @@ const BookingForm = () => {
     setLoading(true);
     
     try {
-      const { data, error } = await (supabase as any)
+      const { error } = await supabase
         .from('bookings')
-        .insert([formData])
-        .select()
-        .single();
+        .insert([{
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          service: formData.service,
+          date: formData.date,
+          time: formData.time,
+          message: formData.message || null,
+        }]);
 
       if (error) throw error;
 
+      // Try to send notification (non-blocking)
       supabase.functions.invoke('send-booking-notification', {
         body: {
-          customer_name: formData.customer_name,
-          customer_email: formData.customer_email,
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
           service: formData.service,
-          preferred_date: formData.preferred_date,
-          preferred_time: formData.preferred_time,
-          status: 'pending'
+          date: formData.date,
+          time: formData.time,
         }
       }).catch(err => console.error('Error sending notification:', err));
 
       toast({
         title: "Bokning bekräftad!",
-        description: "Din bokning har registrerats.",
+        description: "Din bokning har registrerats. Vi kontaktar dig snart.",
       });
 
       setFormData({
-        customer_name: "",
-        customer_email: "",
+        name: "",
+        email: "",
+        phone: "",
         service: "",
-        preferred_date: "",
-        preferred_time: "",
+        date: "",
+        time: "",
+        message: "",
       });
     } catch (error) {
       console.error('Error creating booking:', error);
@@ -113,36 +125,53 @@ const BookingForm = () => {
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <Label htmlFor="customer_name" className="text-foreground text-sm font-medium mb-2 block">
-              Namn
+            <Label htmlFor="name" className="text-foreground text-sm font-medium mb-2 block">
+              Namn *
             </Label>
             <Input
-              id="customer_name"
-              name="customer_name"
+              id="name"
+              name="name"
               type="text"
-              value={formData.customer_name}
+              value={formData.name}
               onChange={handleInputChange}
               className="bg-input border-border h-12"
+              placeholder="Ditt namn"
             />
           </div>
 
           <div>
-            <Label htmlFor="customer_email" className="text-foreground text-sm font-medium mb-2 block">
-              E-post
+            <Label htmlFor="email" className="text-foreground text-sm font-medium mb-2 block">
+              E-post *
             </Label>
             <Input
-              id="customer_email"
-              name="customer_email"
+              id="email"
+              name="email"
               type="email"
-              value={formData.customer_email}
+              value={formData.email}
               onChange={handleInputChange}
               className="bg-input border-border h-12"
+              placeholder="din@email.se"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="phone" className="text-foreground text-sm font-medium mb-2 block">
+              Telefon *
+            </Label>
+            <Input
+              id="phone"
+              name="phone"
+              type="tel"
+              value={formData.phone}
+              onChange={handleInputChange}
+              className="bg-input border-border h-12"
+              placeholder="070-123 45 67"
             />
           </div>
 
           <div>
             <Label className="text-foreground text-sm font-medium mb-2 block">
-              Tjänst
+              Tjänst *
             </Label>
             <Select onValueChange={(value) => handleSelectChange('service', value)} value={formData.service}>
               <SelectTrigger className="bg-input border-border h-12">
@@ -162,24 +191,25 @@ const BookingForm = () => {
           </div>
 
           <div>
-            <Label htmlFor="preferred_date" className="text-foreground text-sm font-medium mb-2 block">
-              Datum
+            <Label htmlFor="date" className="text-foreground text-sm font-medium mb-2 block">
+              Datum *
             </Label>
             <Input
-              id="preferred_date"
-              name="preferred_date"
+              id="date"
+              name="date"
               type="date"
-              value={formData.preferred_date}
+              value={formData.date}
               onChange={handleInputChange}
               className="bg-input border-border h-12"
+              min={new Date().toISOString().split('T')[0]}
             />
           </div>
 
           <div>
             <Label className="text-foreground text-sm font-medium mb-2 block">
-              Tid
+              Tid *
             </Label>
-            <Select onValueChange={(value) => handleSelectChange('preferred_time', value)} value={formData.preferred_time}>
+            <Select onValueChange={(value) => handleSelectChange('time', value)} value={formData.time}>
               <SelectTrigger className="bg-input border-border h-12">
                 <SelectValue placeholder="Välj tid" />
               </SelectTrigger>
@@ -194,6 +224,20 @@ const BookingForm = () => {
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          <div>
+            <Label htmlFor="message" className="text-foreground text-sm font-medium mb-2 block">
+              Meddelande (valfritt)
+            </Label>
+            <Textarea
+              id="message"
+              name="message"
+              value={formData.message}
+              onChange={handleInputChange}
+              className="bg-input border-border min-h-[80px]"
+              placeholder="Eventuella önskemål..."
+            />
           </div>
 
           <Button 
