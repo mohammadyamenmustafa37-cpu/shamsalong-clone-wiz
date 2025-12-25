@@ -26,7 +26,7 @@ const Hero = () => {
           Expertis i varje klipp
         </h1>
         <p className="text-base md:text-lg text-muted-foreground mb-10 max-w-xl mx-auto leading-relaxed">
-          Vi hör på <span className="text-primary">Shamsalong</span> erbjuder de bästa frisyrerna 
+          Vi här på <span className="text-primary">Shamsalong</span> erbjuder de bästa frisyrerna 
           du kommer någonsin att få. Inga kompromisser får ske och du som kund ska ha det bästa. 
           Vår salong ligger på <span className="text-primary">Esplanaden 1B</span> Oxelösund.
         </p>
