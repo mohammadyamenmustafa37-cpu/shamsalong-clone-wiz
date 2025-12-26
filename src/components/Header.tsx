@@ -30,7 +30,7 @@ const Header = () => {
               <Instagram className="w-5 h-5" />
             </a>
             <a
-              href="https://www.facebook.com/shamsalong"
+              href="https://www.facebook.com/share/1BAV6yT26e/?mibextid=wwXIfr"
               target="_blank"
               rel="noopener noreferrer"
               className="text-muted-foreground hover:text-primary transition-colors"
