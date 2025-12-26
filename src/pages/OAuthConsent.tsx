@@ -13,56 +13,36 @@ const OAuthConsent = () => {
   const [isProcessing, setIsProcessing] = useState(true);
 
   useEffect(() => {
-    // Handle OAuth callback
-    const handleOAuthCallback = async () => {
-      try {
-        // Check if user is authenticated
-        if (loading) {
-          return;
-        }
+    // Don't do anything while still loading
+    if (loading) {
+      return;
+    }
 
-        if (user) {
-          console.log('OAuth authentication successful', user.id);
-          
-          toast({
-            title: 'Inloggning lyckades!',
-            description: 'Du kommer att omdirigeras till admin-panelen.',
-          });
+    // If user is authenticated, redirect to admin immediately
+    if (user) {
+      console.log('OAuth authentication successful', user.id);
+      setIsProcessing(false);
+      navigate('/admin', { replace: true });
+      return;
+    }
 
-          // Redirect to admin after successful OAuth
-          setTimeout(() => {
-            navigate('/admin');
-          }, 2000);
-        } else {
-          console.error('OAuth authentication failed - no user found');
-          
-          toast({
-            title: 'Inloggning misslyckades',
-            description: 'Kunde inte slutföra Google-inloggningen.',
-            variant: 'destructive',
-          });
+    // Only show error after a delay to avoid flash during auth state resolution
+    const timeout = setTimeout(() => {
+      console.error('OAuth authentication failed - no user found');
+      setIsProcessing(false);
+      
+      toast({
+        title: 'Inloggning misslyckades',
+        description: 'Kunde inte slutföra Google-inloggningen.',
+        variant: 'destructive',
+      });
 
-          setTimeout(() => {
-            navigate('/login');
-          }, 3000);
-        }
-      } catch (error) {
-        console.error('OAuth callback error:', error);
-        toast({
-          title: 'Fel',
-          description: 'Ett oväntat fel inträffade.',
-          variant: 'destructive',
-        });
-        
-        setTimeout(() => {
-          navigate('/login');
-        }, 3000);
-      } finally {
-        setIsProcessing(false);
-      }
-    };
+      setTimeout(() => {
+        navigate('/login', { replace: true });
+      }, 2000);
+    }, 1500);
 
-    handleOAuthCallback();
+    return () => clearTimeout(timeout);
   }, [user, loading, navigate, toast]);
 
   return (
