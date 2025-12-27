@@ -1,17 +1,25 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.57.2';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-interface BookingUpdate {
-  service?: string;
-  preferred_date?: string;
-  preferred_time?: string;
-  notes?: string;
-  status?: string;
-}
+// Zod schemas for input validation
+const emailSchema = z.string().email().max(255).transform(val => val.trim().toLowerCase());
+const uuidSchema = z.string().uuid();
+const actionSchema = z.enum(['search', 'update', 'delete']);
+
+const updateSchema = z.object({
+  service: z.string().max(100).optional(),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format').optional(),
+  time: z.string().regex(/^\d{2}:\d{2}$/, 'Invalid time format').optional(),
+  message: z.string().max(500).optional(),
+  status: z.enum(['pending', 'confirmed', 'cancelled', 'completed']).optional(),
+  name: z.string().max(100).optional(),
+  phone: z.string().max(20).optional(),
+}).strict(); // Reject unknown fields
 
 // Simple in-memory rate limiting (resets on function cold start)
 // For production, consider using a persistent store like Redis or Supabase
@@ -88,19 +96,27 @@ Deno.serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const { action, email, bookingId, updates } = await req.json();
+    const body = await req.json();
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email || !emailRegex.test(email)) {
+    // Validate action
+    const actionResult = actionSchema.safeParse(body.action);
+    if (!actionResult.success) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid action' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    const action = actionResult.data;
+
+    // Validate email
+    const emailResult = emailSchema.safeParse(body.email);
+    if (!emailResult.success) {
       return new Response(
         JSON.stringify({ error: 'Valid email is required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
-
-    // Normalize email
-    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedEmail = emailResult.data;
 
     console.log(`[manage-booking] Action: ${action}, IP: ${clientIP}, Rate limit remaining: ${rateLimit.remaining}`);
 
@@ -132,9 +148,31 @@ Deno.serve(async (req) => {
     }
 
     if (action === 'update') {
-      if (!bookingId) {
+      // Validate bookingId as UUID
+      const bookingIdResult = uuidSchema.safeParse(body.bookingId);
+      if (!bookingIdResult.success) {
         return new Response(
-          JSON.stringify({ error: 'Booking ID is required' }),
+          JSON.stringify({ error: 'Valid booking ID is required' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      const bookingId = bookingIdResult.data;
+
+      // Validate updates object
+      const updatesResult = updateSchema.safeParse(body.updates);
+      if (!updatesResult.success) {
+        console.log('[manage-booking] Invalid updates object:', updatesResult.error.errors);
+        return new Response(
+          JSON.stringify({ error: 'Invalid update data' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      const validatedUpdates = updatesResult.data;
+
+      // Check if there's anything to update
+      if (Object.keys(validatedUpdates).length === 0) {
+        return new Response(
+          JSON.stringify({ error: 'No valid fields to update' }),
           { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
@@ -155,10 +193,10 @@ Deno.serve(async (req) => {
         );
       }
 
-      // Update the booking
+      // Update the booking with validated data
       const { data, error } = await supabase
         .from('bookings')
-        .update(updates as BookingUpdate)
+        .update(validatedUpdates)
         .eq('id', bookingId)
         .select()
         .single();
@@ -180,12 +218,15 @@ Deno.serve(async (req) => {
     }
 
     if (action === 'delete') {
-      if (!bookingId) {
+      // Validate bookingId as UUID
+      const bookingIdResult = uuidSchema.safeParse(body.bookingId);
+      if (!bookingIdResult.success) {
         return new Response(
-          JSON.stringify({ error: 'Booking ID is required' }),
+          JSON.stringify({ error: 'Valid booking ID is required' }),
           { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
+      const bookingId = bookingIdResult.data;
 
       // Verify booking belongs to this email
       const { data: booking, error: fetchError } = await supabase
