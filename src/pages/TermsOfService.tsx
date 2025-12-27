@@ -10,7 +10,7 @@ const TermsOfService = () => {
           <div className="flex items-center justify-between">
             <h1 className="text-2xl font-bold text-primary">Sham Salong</h1>
             <Link to="/">
-              <Button variant="outline">Back to Home</Button>
+              <Button variant="outline">Tillbaka till startsidan</Button>
             </Link>
           </div>
         </div>
@@ -19,84 +19,84 @@ const TermsOfService = () => {
       <main className="container mx-auto px-4 py-8 max-w-4xl">
         <Card>
           <CardHeader>
-            <CardTitle className="text-3xl">Terms of Service</CardTitle>
-            <p className="text-muted-foreground">Last updated: {new Date().toLocaleDateString()}</p>
+            <CardTitle className="text-3xl">Användarvillkor</CardTitle>
+            <p className="text-muted-foreground">Senast uppdaterad: {new Date().toLocaleDateString('sv-SE')}</p>
           </CardHeader>
           <CardContent className="prose prose-sm max-w-none space-y-6">
             <section>
-              <h2 className="text-2xl font-semibold mb-3">1. Agreement to Terms</h2>
+              <h2 className="text-2xl font-semibold mb-3">1. Godkännande av villkor</h2>
               <p className="text-muted-foreground">
-                By accessing or using Sham Salong, you agree to be bound by these Terms of Service. If you disagree with any part of these terms, you may not access the service.
+                Genom att använda Sham Salong godkänner du att vara bunden av dessa användarvillkor. Om du inte godkänner någon del av dessa villkor får du inte använda tjänsten.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-3">2. Use License</h2>
+              <h2 className="text-2xl font-semibold mb-3">2. Användarlicens</h2>
               <p className="text-muted-foreground">
-                Permission is granted to temporarily access the service for personal, non-commercial use only. This is the grant of a license, not a transfer of title.
+                Du beviljas tillstånd att tillfälligt använda tjänsten för personligt, icke-kommersiellt bruk. Detta är ett beviljande av licens, inte en överföring av äganderätt.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-3">3. User Accounts</h2>
+              <h2 className="text-2xl font-semibold mb-3">3. Användarkonton</h2>
               <p className="text-muted-foreground">
-                You are responsible for maintaining the confidentiality of your account and password. You agree to accept responsibility for all activities that occur under your account.
+                Du ansvarar för att hålla ditt konto och lösenord konfidentiellt. Du samtycker till att ta ansvar för alla aktiviteter som sker under ditt konto.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-3">4. Prohibited Uses</h2>
+              <h2 className="text-2xl font-semibold mb-3">4. Förbjuden användning</h2>
               <p className="text-muted-foreground">
-                You may not use the service for any illegal purpose or to violate any laws. You may not attempt to gain unauthorized access to any portion of the service.
+                Du får inte använda tjänsten för något olagligt syfte eller för att bryta mot några lagar. Du får inte försöka få obehörig åtkomst till någon del av tjänsten.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-3">5. Intellectual Property</h2>
+              <h2 className="text-2xl font-semibold mb-3">5. Immateriella rättigheter</h2>
               <p className="text-muted-foreground">
-                The service and its original content, features, and functionality are owned by Sham Salong and are protected by international copyright, trademark, and other intellectual property laws.
+                Tjänsten och dess ursprungliga innehåll, funktioner och funktionalitet ägs av Sham Salong och skyddas av internationella upphovsrätts-, varumärkes- och andra immaterialrättsliga lagar.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-3">6. Termination</h2>
+              <h2 className="text-2xl font-semibold mb-3">6. Uppsägning</h2>
               <p className="text-muted-foreground">
-                We may terminate or suspend your account immediately, without prior notice, for any breach of these Terms. Upon termination, your right to use the service will immediately cease.
+                Vi kan avsluta eller stänga av ditt konto omedelbart, utan föregående varsel, vid överträdelse av dessa villkor. Vid uppsägning upphör din rätt att använda tjänsten omedelbart.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-3">7. Limitation of Liability</h2>
+              <h2 className="text-2xl font-semibold mb-3">7. Ansvarsbegränsning</h2>
               <p className="text-muted-foreground">
-                In no event shall Sham Salong be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use of, or inability to use, the service.
+                Sham Salong ska under inga omständigheter hållas ansvarig för indirekta, tillfälliga, speciella, följdskador eller straffskadestånd som uppstår från din användning av, eller oförmåga att använda, tjänsten.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-3">8. Disclaimer</h2>
+              <h2 className="text-2xl font-semibold mb-3">8. Friskrivning</h2>
               <p className="text-muted-foreground">
-                The service is provided "as is" without any warranties, expressed or implied. We do not warrant that the service will be uninterrupted, timely, secure, or error-free.
+                Tjänsten tillhandahålls "i befintligt skick" utan några garantier, uttryckta eller underförstådda. Vi garanterar inte att tjänsten kommer att vara oavbruten, i rätt tid, säker eller felfri.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-3">9. Governing Law</h2>
+              <h2 className="text-2xl font-semibold mb-3">9. Tillämplig lag</h2>
               <p className="text-muted-foreground">
-                These Terms shall be governed by and construed in accordance with applicable laws, without regard to its conflict of law provisions.
+                Dessa villkor ska regleras av och tolkas i enlighet med svensk lag, utan hänsyn till dess lagvalsregler.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-3">10. Changes to Terms</h2>
+              <h2 className="text-2xl font-semibold mb-3">10. Ändringar av villkoren</h2>
               <p className="text-muted-foreground">
-                We reserve the right to modify these terms at any time. We will notify users of changes by posting the new Terms of Service on this page with an updated revision date.
+                Vi förbehåller oss rätten att ändra dessa villkor när som helst. Vi meddelar användare om ändringar genom att publicera de nya användarvillkoren på denna sida med ett uppdaterat revisionsdatum.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-3">11. Contact Us</h2>
+              <h2 className="text-2xl font-semibold mb-3">11. Kontakta oss</h2>
               <p className="text-muted-foreground">
-                If you have any questions about these Terms of Service, please contact us through our website.
+                Om du har några frågor om dessa användarvillkor, vänligen kontakta oss via vår webbplats.
               </p>
             </section>
           </CardContent>
