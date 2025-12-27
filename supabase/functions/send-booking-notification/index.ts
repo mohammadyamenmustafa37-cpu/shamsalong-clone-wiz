@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "npm:resend@2.0.0";
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -8,15 +9,69 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-interface BookingNotification {
-  customer_name: string;
-  customer_email: string;
-  customer_phone?: string;
-  service: string;
-  preferred_date: string;
-  preferred_time: string;
-  notes?: string;
-  status: string;
+// Input validation schema
+const bookingNotificationSchema = z.object({
+  customer_name: z.string().min(1).max(100),
+  customer_email: z.string().email().max(255),
+  customer_phone: z.string().max(20).optional(),
+  service: z.string().min(1).max(100),
+  preferred_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format'),
+  preferred_time: z.string().regex(/^\d{2}:\d{2}$/, 'Invalid time format'),
+  notes: z.string().max(500).optional(),
+  status: z.string().max(50),
+});
+
+// Simple in-memory rate limiting
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+
+function getClientIP(req: Request): string {
+  const forwardedFor = req.headers.get('x-forwarded-for');
+  if (forwardedFor) {
+    return forwardedFor.split(',')[0].trim();
+  }
+  const realIP = req.headers.get('x-real-ip');
+  if (realIP) {
+    return realIP;
+  }
+  return 'unknown';
+}
+
+function checkRateLimit(ip: string, maxRequests: number = 5, windowMs: number = 3600000): { allowed: boolean; remaining: number } {
+  const now = Date.now();
+  const record = rateLimitMap.get(ip);
+  
+  // Clean up old entries periodically
+  if (rateLimitMap.size > 10000) {
+    for (const [key, value] of rateLimitMap.entries()) {
+      if (value.resetTime < now) {
+        rateLimitMap.delete(key);
+      }
+    }
+  }
+  
+  if (!record || record.resetTime < now) {
+    rateLimitMap.set(ip, { count: 1, resetTime: now + windowMs });
+    return { allowed: true, remaining: maxRequests - 1 };
+  }
+  
+  if (record.count >= maxRequests) {
+    return { allowed: false, remaining: 0 };
+  }
+  
+  record.count++;
+  return { allowed: true, remaining: maxRequests - record.count };
+}
+
+// HTML escape function to prevent XSS in email content
+function escapeHtml(text: string): string {
+  const map: Record<string, string> = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+  };
+  return text.replace(/[&<>"']/g, (char) => map[char]);
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -25,8 +80,39 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const booking: BookingNotification = await req.json();
-    console.log("Received booking notification request:", booking);
+    // Rate limiting check
+    const clientIP = getClientIP(req);
+    const rateLimit = checkRateLimit(clientIP, 5, 3600000); // 5 emails per hour per IP
+    
+    if (!rateLimit.allowed) {
+      console.log(`[send-booking-notification] Rate limit exceeded for IP: ${clientIP}`);
+      return new Response(
+        JSON.stringify({ error: 'Too many requests. Please try again later.' }),
+        { 
+          status: 429, 
+          headers: { 
+            ...corsHeaders, 
+            'Content-Type': 'application/json',
+            'Retry-After': '3600'
+          } 
+        }
+      );
+    }
+
+    const body = await req.json();
+    
+    // Validate input
+    const parseResult = bookingNotificationSchema.safeParse(body);
+    if (!parseResult.success) {
+      console.log('[send-booking-notification] Invalid input:', parseResult.error.errors);
+      return new Response(
+        JSON.stringify({ error: 'Invalid booking data' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    const booking = parseResult.data;
+    console.log(`[send-booking-notification] Processing notification for IP: ${clientIP}`);
 
     // Format the date and time for better readability
     const bookingDate = new Date(booking.preferred_date).toLocaleDateString('en-US', {
@@ -36,11 +122,20 @@ const handler = async (req: Request): Promise<Response> => {
       day: 'numeric'
     });
 
+    // Escape all user-provided content for HTML email
+    const safeName = escapeHtml(booking.customer_name);
+    const safeEmail = escapeHtml(booking.customer_email);
+    const safePhone = booking.customer_phone ? escapeHtml(booking.customer_phone) : null;
+    const safeService = escapeHtml(booking.service);
+    const safeTime = escapeHtml(booking.preferred_time);
+    const safeStatus = escapeHtml(booking.status);
+    const safeNotes = booking.notes ? escapeHtml(booking.notes) : null;
+
     // Send email notification to admin
     const emailResponse = await resend.emails.send({
       from: "Sham Salong <onboarding@resend.dev>",
       to: ["admin@shamsalong.com"], // Replace with your actual admin email
-      subject: `New Booking: ${booking.customer_name} - ${booking.service}`,
+      subject: `New Booking: ${safeName} - ${safeService}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h1 style="color: #333; border-bottom: 2px solid #4CAF50; padding-bottom: 10px;">
@@ -49,18 +144,18 @@ const handler = async (req: Request): Promise<Response> => {
           
           <div style="background-color: #f9f9f9; padding: 20px; border-radius: 5px; margin: 20px 0;">
             <h2 style="color: #4CAF50; margin-top: 0;">Customer Information</h2>
-            <p><strong>Name:</strong> ${booking.customer_name}</p>
-            <p><strong>Email:</strong> ${booking.customer_email}</p>
-            ${booking.customer_phone ? `<p><strong>Phone:</strong> ${booking.customer_phone}</p>` : ''}
+            <p><strong>Name:</strong> ${safeName}</p>
+            <p><strong>Email:</strong> ${safeEmail}</p>
+            ${safePhone ? `<p><strong>Phone:</strong> ${safePhone}</p>` : ''}
           </div>
 
           <div style="background-color: #f9f9f9; padding: 20px; border-radius: 5px; margin: 20px 0;">
             <h2 style="color: #4CAF50; margin-top: 0;">Booking Details</h2>
-            <p><strong>Service:</strong> ${booking.service}</p>
+            <p><strong>Service:</strong> ${safeService}</p>
             <p><strong>Date:</strong> ${bookingDate}</p>
-            <p><strong>Time:</strong> ${booking.preferred_time}</p>
-            <p><strong>Status:</strong> <span style="background-color: #FFA500; color: white; padding: 3px 8px; border-radius: 3px;">${booking.status}</span></p>
-            ${booking.notes ? `<p><strong>Notes:</strong> ${booking.notes}</p>` : ''}
+            <p><strong>Time:</strong> ${safeTime}</p>
+            <p><strong>Status:</strong> <span style="background-color: #FFA500; color: white; padding: 3px 8px; border-radius: 3px;">${safeStatus}</span></p>
+            ${safeNotes ? `<p><strong>Notes:</strong> ${safeNotes}</p>` : ''}
           </div>
 
           <p style="color: #666; font-size: 14px; margin-top: 30px;">
@@ -70,7 +165,7 @@ const handler = async (req: Request): Promise<Response> => {
       `,
     });
 
-    console.log("Email sent successfully:", emailResponse);
+    console.log("[send-booking-notification] Email sent successfully:", emailResponse);
 
     return new Response(JSON.stringify(emailResponse), {
       status: 200,
@@ -80,9 +175,9 @@ const handler = async (req: Request): Promise<Response> => {
       },
     });
   } catch (error: any) {
-    console.error("Error sending booking notification:", error);
+    console.error("[send-booking-notification] Error:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: 'Unable to process request' }),
       {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },
