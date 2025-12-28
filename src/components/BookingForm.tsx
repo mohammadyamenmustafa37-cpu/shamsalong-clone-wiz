@@ -9,11 +9,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 const services = [
-  "Herrklippning (Haircut)",
-  "Skäggtrimning (Beard Trim)",
-  "Hårfärgning (Hair Coloring)",
-  "Klippning + Skägg (Haircut + Beard)",
-  "Premium styling",
+  "Pensionär klippning (Herr)",
+  "Pensionär klippning (Dam)",
+  "Fade klippning (Herr)",
+  "Fade klippning (Barn)",
+  "Herr klippning",
+  "Herr klippning + Skägg",
+  "Fade skägg (Herr)",
+  "Rakning av Skägg",
+  "Herrklippning + skägg + trådning och wax",
 ];
 
 const timeSlots = [
