@@ -44,23 +44,27 @@ import {
 
 interface Booking {
   id: string;
-  customer_name: string;
-  customer_email: string;
-  customer_phone: string | null;
+  name: string;
+  email: string;
+  phone: string | null;
   service: string;
-  preferred_date: string;
-  preferred_time: string;
-  notes: string | null;
+  date: string;
+  time: string;
+  message: string | null;
   status: string;
   created_at: string;
 }
 
 const services = [
-  "Herrklippning (Haircut)",
-  "Skäggtrimning (Beard Trim)",
-  "Hårfärgning (Hair Coloring)",
-  "Klippning + Skägg (Haircut + Beard)",
-  "Premium styling",
+  "Pensionär klippning (Herr)",
+  "Pensionär klippning (Dam)",
+  "Fade klippning (Herr)",
+  "Fade klippning (Barn)",
+  "Herr klippning",
+  "Herr klippning + Skägg",
+  "Fade skägg (Herr)",
+  "Rakning av Skägg",
+  "Herrklippning + skägg + trådning och wax",
 ];
 
 const BookingsTable = () => {
@@ -71,9 +75,9 @@ const BookingsTable = () => {
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [editForm, setEditForm] = useState({
     service: "",
-    preferred_date: "",
-    preferred_time: "",
-    notes: "",
+    date: "",
+    time: "",
+    message: "",
     status: "",
   });
   const { toast } = useToast();
@@ -113,9 +117,9 @@ const BookingsTable = () => {
     setSelectedBooking(booking);
     setEditForm({
       service: booking.service,
-      preferred_date: booking.preferred_date,
-      preferred_time: booking.preferred_time,
-      notes: booking.notes || "",
+      date: booking.date,
+      time: booking.time,
+      message: booking.message || "",
       status: booking.status,
     });
     setEditDialogOpen(true);
@@ -164,9 +168,9 @@ const BookingsTable = () => {
         .from('bookings')
         .update({
           service: editForm.service,
-          preferred_date: editForm.preferred_date,
-          preferred_time: editForm.preferred_time,
-          notes: editForm.notes,
+          date: editForm.date,
+          time: editForm.time,
+          message: editForm.message,
           status: editForm.status,
         })
         .eq('id', selectedBooking.id);
@@ -230,19 +234,19 @@ const BookingsTable = () => {
                     key={booking.id}
                     className="border-border hover:bg-secondary/20"
                   >
-                    <TableCell className="font-medium">{booking.customer_name}</TableCell>
-                    <TableCell>{booking.customer_email}</TableCell>
-                    <TableCell>{booking.customer_phone || '-'}</TableCell>
+                    <TableCell className="font-medium">{booking.name}</TableCell>
+                    <TableCell>{booking.email}</TableCell>
+                    <TableCell>{booking.phone || '-'}</TableCell>
                     <TableCell>{booking.service}</TableCell>
-                    <TableCell>{new Date(booking.preferred_date).toLocaleDateString('sv-SE')}</TableCell>
-                    <TableCell>{booking.preferred_time}</TableCell>
+                    <TableCell>{new Date(booking.date).toLocaleDateString('sv-SE')}</TableCell>
+                    <TableCell>{booking.time}</TableCell>
                     <TableCell>
                       <Badge variant={getStatusBadgeVariant(booking.status)}>
                         {booking.status}
                       </Badge>
                     </TableCell>
                     <TableCell className="max-w-xs truncate">
-                      {booking.notes || '-'}
+                      {booking.message || '-'}
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-2">
@@ -275,8 +279,8 @@ const BookingsTable = () => {
                 <div className="space-y-3">
                   <div className="flex justify-between items-start">
                     <div>
-                      <p className="font-semibold text-lg">{booking.customer_name}</p>
-                      <p className="text-sm text-muted-foreground">{booking.customer_email}</p>
+                      <p className="font-semibold text-lg">{booking.name}</p>
+                      <p className="text-sm text-muted-foreground">{booking.email}</p>
                     </div>
                     <Badge variant={getStatusBadgeVariant(booking.status)}>
                       {booking.status}
@@ -284,10 +288,10 @@ const BookingsTable = () => {
                   </div>
                   
                   <div className="space-y-2 text-sm">
-                    {booking.customer_phone && (
+                    {booking.phone && (
                       <div className="flex justify-between">
                         <span className="text-primary font-medium">Telefon:</span>
-                        <span>{booking.customer_phone}</span>
+                        <span>{booking.phone}</span>
                       </div>
                     )}
                     <div className="flex justify-between">
@@ -296,16 +300,16 @@ const BookingsTable = () => {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-primary font-medium">Datum:</span>
-                      <span>{new Date(booking.preferred_date).toLocaleDateString('sv-SE')}</span>
+                      <span>{new Date(booking.date).toLocaleDateString('sv-SE')}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-primary font-medium">Tid:</span>
-                      <span>{booking.preferred_time}</span>
+                      <span>{booking.time}</span>
                     </div>
-                    {booking.notes && (
+                    {booking.message && (
                       <div className="pt-2 border-t border-border">
-                        <span className="text-primary font-medium">Anteckningar:</span>
-                        <p className="mt-1 text-muted-foreground">{booking.notes}</p>
+                        <span className="text-primary font-medium">Meddelande:</span>
+                        <p className="mt-1 text-muted-foreground">{booking.message}</p>
                       </div>
                     )}
                   </div>
@@ -343,7 +347,7 @@ const BookingsTable = () => {
           <DialogHeader>
             <DialogTitle className="font-display">Redigera bokning</DialogTitle>
             <DialogDescription>
-              Uppdatera bokningsinformation för {selectedBooking?.customer_name}
+              Uppdatera bokningsinformation för {selectedBooking?.name}
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
@@ -372,9 +376,9 @@ const BookingsTable = () => {
               <Input
                 id="date"
                 type="date"
-                value={editForm.preferred_date}
+                value={editForm.date}
                 onChange={(e) =>
-                  setEditForm({ ...editForm, preferred_date: e.target.value })
+                  setEditForm({ ...editForm, date: e.target.value })
                 }
                 className="bg-input border-border"
               />
@@ -384,9 +388,9 @@ const BookingsTable = () => {
               <Input
                 id="time"
                 type="time"
-                value={editForm.preferred_time}
+                value={editForm.time}
                 onChange={(e) =>
-                  setEditForm({ ...editForm, preferred_time: e.target.value })
+                  setEditForm({ ...editForm, time: e.target.value })
                 }
                 className="bg-input border-border"
               />
@@ -411,14 +415,14 @@ const BookingsTable = () => {
               </Select>
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="notes">Anteckningar</Label>
+              <Label htmlFor="message">Meddelande</Label>
               <Textarea
-                id="notes"
-                value={editForm.notes}
+                id="message"
+                value={editForm.message}
                 onChange={(e) =>
-                  setEditForm({ ...editForm, notes: e.target.value })
+                  setEditForm({ ...editForm, message: e.target.value })
                 }
-                placeholder="Eventuella anteckningar..."
+                placeholder="Eventuellt meddelande..."
                 className="bg-input border-border"
               />
             </div>
@@ -441,7 +445,7 @@ const BookingsTable = () => {
             <AlertDialogTitle className="font-display">Är du säker?</AlertDialogTitle>
             <AlertDialogDescription>
               Detta kommer att permanent radera bokningen för{" "}
-              {selectedBooking?.customer_name}. Denna åtgärd kan inte ångras.
+              {selectedBooking?.name}. Denna åtgärd kan inte ångras.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
