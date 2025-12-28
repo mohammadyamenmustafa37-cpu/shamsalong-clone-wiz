@@ -9,21 +9,26 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 const services = [
-  "Pensionär klippning (Herr)",
-  "Pensionär klippning (Dam)",
-  "Fade klippning (Herr)",
-  "Fade klippning (Barn)",
-  "Herr klippning",
-  "Herr klippning + Skägg",
-  "Fade skägg (Herr)",
-  "Rakning av Skägg",
-  "Herrklippning + skägg + trådning och wax",
+  { name: "Pensionär klippning (Herr)", price: 300 },
+  { name: "Pensionär klippning (Dam)", price: 400 },
+  { name: "Fade klippning (Herr)", price: 400 },
+  { name: "Fade klippning (Barn)", price: 300 },
+  { name: "Herr klippning", price: 400 },
+  { name: "Herr klippning + Skägg", price: 450 },
+  { name: "Fade skägg (Herr)", price: 200 },
+  { name: "Rakning av Skägg", price: 150 },
+  { name: "Herrklippning + skägg + trådning och wax", price: 550 },
 ];
 
 const timeSlots = [
   "09:00", "10:00", "11:00", "12:00", "13:00", 
   "14:00", "15:00", "16:00", "17:00", "18:00"
 ];
+
+const getServicePrice = (serviceName: string): number => {
+  const service = services.find(s => s.name === serviceName);
+  return service?.price || 0;
+};
 
 const BookingForm = () => {
   const { toast } = useToast();
@@ -184,14 +189,25 @@ const BookingForm = () => {
               <SelectContent className="bg-popover border-border">
                 {services.map((service) => (
                   <SelectItem 
-                    key={service} 
-                    value={service}
+                    key={service.name} 
+                    value={service.name}
                   >
-                    {service}
+                    <span className="flex justify-between w-full gap-4">
+                      <span>{service.name}</span>
+                      <span className="text-primary font-medium">{service.price}kr</span>
+                    </span>
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
+            {formData.service && (
+              <div className="mt-3 p-4 bg-primary/10 rounded-lg border border-primary/20">
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">Totalt att betala:</span>
+                  <span className="text-2xl font-bold text-primary">{getServicePrice(formData.service)}kr</span>
+                </div>
+              </div>
+            )}
           </div>
 
           <div>
