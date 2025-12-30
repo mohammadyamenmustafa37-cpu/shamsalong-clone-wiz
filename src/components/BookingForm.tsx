@@ -3,9 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, X } from "lucide-react";
+import { Loader2, X, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -37,6 +36,7 @@ const BookingForm = () => {
     message: "",
   });
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
+  const [currentService, setCurrentService] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -48,12 +48,11 @@ const BookingForm = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const toggleService = (serviceName: string) => {
-    setSelectedServices(prev => 
-      prev.includes(serviceName) 
-        ? prev.filter(s => s !== serviceName)
-        : [...prev, serviceName]
-    );
+  const addService = () => {
+    if (currentService && !selectedServices.includes(currentService)) {
+      setSelectedServices(prev => [...prev, currentService]);
+      setCurrentService("");
+    }
   };
 
   const removeService = (serviceName: string) => {
@@ -196,31 +195,34 @@ const BookingForm = () => {
           </div>
 
           <div>
-            <Label className="text-foreground text-sm font-medium mb-3 block">
-              Tjänster * (välj en eller flera)
+            <Label className="text-foreground text-sm font-medium mb-2 block">
+              Tjänst *
             </Label>
-            <div className="space-y-2 bg-input border border-border rounded-lg p-4">
-              {services.map((service) => (
-                <div 
-                  key={service.name} 
-                  className="flex items-center justify-between py-2 border-b border-border/50 last:border-0"
-                >
-                  <div className="flex items-center space-x-3">
-                    <Checkbox
-                      id={service.name}
-                      checked={selectedServices.includes(service.name)}
-                      onCheckedChange={() => toggleService(service.name)}
-                    />
-                    <label 
-                      htmlFor={service.name}
-                      className="text-sm text-foreground cursor-pointer"
+            <div className="flex gap-2">
+              <Select value={currentService} onValueChange={setCurrentService}>
+                <SelectTrigger className="bg-input border-border h-12 flex-1">
+                  <SelectValue placeholder="Välj en tjänst" />
+                </SelectTrigger>
+                <SelectContent className="bg-popover border-border">
+                  {services.map((service) => (
+                    <SelectItem 
+                      key={service.name} 
+                      value={service.name}
+                      disabled={selectedServices.includes(service.name)}
                     >
                       {service.name}
-                    </label>
-                  </div>
-                  <span className="text-sm text-muted-foreground">{service.price}kr</span>
-                </div>
-              ))}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button 
+                type="button" 
+                onClick={addService}
+                disabled={!currentService}
+                className="h-12 px-4"
+              >
+                <Plus className="w-5 h-5" />
+              </Button>
             </div>
           </div>
 
