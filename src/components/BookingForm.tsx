@@ -2,9 +2,10 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Loader2, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -25,22 +26,17 @@ const timeSlots = [
   "14:00", "15:00", "16:00", "17:00", "18:00"
 ];
 
-const getServicePrice = (serviceName: string): number => {
-  const service = services.find(s => s.name === serviceName);
-  return service?.price || 0;
-};
-
 const BookingForm = () => {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
-    service: "",
     date: "",
     time: "",
     message: "",
   });
+  const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -52,14 +48,33 @@ const BookingForm = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const toggleService = (serviceName: string) => {
+    setSelectedServices(prev => 
+      prev.includes(serviceName) 
+        ? prev.filter(s => s !== serviceName)
+        : [...prev, serviceName]
+    );
+  };
+
+  const removeService = (serviceName: string) => {
+    setSelectedServices(prev => prev.filter(s => s !== serviceName));
+  };
+
+  const getTotalPrice = (): number => {
+    return selectedServices.reduce((total, serviceName) => {
+      const service = services.find(s => s.name === serviceName);
+      return total + (service?.price || 0);
+    }, 0);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name || !formData.email || !formData.phone || !formData.service || 
+    if (!formData.name || !formData.email || !formData.phone || selectedServices.length === 0 || 
         !formData.date || !formData.time) {
       toast({
         title: "Fel",
-        description: "Vänligen fyll i alla obligatoriska fält.",
+        description: "Vänligen fyll i alla obligatoriska fält och välj minst en tjänst.",
         variant: "destructive",
       });
       return;
@@ -68,13 +83,15 @@ const BookingForm = () => {
     setLoading(true);
     
     try {
+      const serviceString = selectedServices.join(", ");
+      
       const { error } = await supabase
         .from('bookings')
         .insert([{
           name: formData.name,
           email: formData.email,
           phone: formData.phone,
-          service: formData.service,
+          service: serviceString,
           date: formData.date,
           time: formData.time,
           message: formData.message || null,
@@ -88,7 +105,7 @@ const BookingForm = () => {
           name: formData.name,
           email: formData.email,
           phone: formData.phone,
-          service: formData.service,
+          service: serviceString,
           date: formData.date,
           time: formData.time,
         }
@@ -103,11 +120,11 @@ const BookingForm = () => {
         name: "",
         email: "",
         phone: "",
-        service: "",
         date: "",
         time: "",
         message: "",
       });
+      setSelectedServices([]);
     } catch (error) {
       console.error('Error creating booking:', error);
       toast({
@@ -179,24 +196,32 @@ const BookingForm = () => {
           </div>
 
           <div>
-            <Label className="text-foreground text-sm font-medium mb-2 block">
-              Tjänst *
+            <Label className="text-foreground text-sm font-medium mb-3 block">
+              Tjänster * (välj en eller flera)
             </Label>
-            <Select onValueChange={(value) => handleSelectChange('service', value)} value={formData.service}>
-              <SelectTrigger className="bg-input border-border h-12">
-                <SelectValue placeholder="Välj en tjänst" />
-              </SelectTrigger>
-              <SelectContent className="bg-popover border-border">
-                {services.map((service) => (
-                  <SelectItem 
-                    key={service.name} 
-                    value={service.name}
-                  >
-                    {service.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="space-y-2 bg-input border border-border rounded-lg p-4">
+              {services.map((service) => (
+                <div 
+                  key={service.name} 
+                  className="flex items-center justify-between py-2 border-b border-border/50 last:border-0"
+                >
+                  <div className="flex items-center space-x-3">
+                    <Checkbox
+                      id={service.name}
+                      checked={selectedServices.includes(service.name)}
+                      onCheckedChange={() => toggleService(service.name)}
+                    />
+                    <label 
+                      htmlFor={service.name}
+                      className="text-sm text-foreground cursor-pointer"
+                    >
+                      {service.name}
+                    </label>
+                  </div>
+                  <span className="text-sm text-muted-foreground">{service.price}kr</span>
+                </div>
+              ))}
+            </div>
           </div>
 
           <div>
@@ -249,54 +274,58 @@ const BookingForm = () => {
             />
           </div>
 
-          {/* Checkout-style total at bottom */}
-          {formData.service && (
-            <div className="sticky bottom-0 -mx-6 -mb-6 mt-4 p-4 bg-card border-t-2 border-primary rounded-b-lg">
-              <div className="flex justify-between items-center mb-3">
-                <div>
-                  <p className="text-sm text-muted-foreground">Vald tjänst</p>
-                  <p className="font-medium text-foreground">{formData.service}</p>
+          {/* Checkout section at bottom */}
+          <div className="mt-8 p-6 bg-card border-2 border-primary/30 rounded-xl">
+            <h3 className="text-lg font-semibold text-foreground mb-4">Sammanfattning</h3>
+            
+            {selectedServices.length > 0 ? (
+              <>
+                <div className="space-y-2 mb-4">
+                  {selectedServices.map((serviceName) => {
+                    const service = services.find(s => s.name === serviceName);
+                    return (
+                      <div key={serviceName} className="flex justify-between items-center py-2 border-b border-border/50">
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => removeService(serviceName)}
+                            className="text-muted-foreground hover:text-destructive transition-colors"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                          <span className="text-sm text-foreground">{serviceName}</span>
+                        </div>
+                        <span className="text-sm font-medium text-foreground">{service?.price}kr</span>
+                      </div>
+                    );
+                  })}
                 </div>
-                <div className="text-right">
-                  <p className="text-sm text-muted-foreground">Totalt</p>
-                  <p className="text-3xl font-bold text-primary">{getServicePrice(formData.service)}kr</p>
+                
+                <div className="flex justify-between items-center pt-4 border-t-2 border-primary/20">
+                  <span className="text-lg font-medium text-foreground">Totalt att betala</span>
+                  <span className="text-3xl font-bold text-primary">{getTotalPrice()}kr</span>
                 </div>
-              </div>
-              <Button 
-                type="submit"
-                size="lg" 
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold h-12"
-                disabled={loading}
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                    Skickar...
-                  </>
-                ) : (
-                  "Bekräfta bokning"
-                )}
-              </Button>
-            </div>
-          )}
+              </>
+            ) : (
+              <p className="text-muted-foreground text-sm">Inga tjänster valda ännu</p>
+            )}
+          </div>
 
-          {!formData.service && (
-            <Button 
-              type="submit"
-              size="lg" 
-              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold h-12 mt-2"
-              disabled={loading}
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Skickar...
-                </>
-              ) : (
-                "Bekräfta bokning"
-              )}
-            </Button>
-          )}
+          <Button 
+            type="submit"
+            size="lg" 
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold h-12 mt-4"
+            disabled={loading}
+          >
+            {loading ? (
+              <>
+                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                Skickar...
+              </>
+            ) : (
+              "Bekräfta bokning"
+            )}
+          </Button>
         </form>
       </div>
     </section>
