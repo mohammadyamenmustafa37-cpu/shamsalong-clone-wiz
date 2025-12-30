@@ -192,22 +192,11 @@ const BookingForm = () => {
                     key={service.name} 
                     value={service.name}
                   >
-                    <span className="flex justify-between w-full gap-4">
-                      <span>{service.name}</span>
-                      <span className="text-primary font-medium">{service.price}kr</span>
-                    </span>
+                    {service.name}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-            {formData.service && (
-              <div className="mt-3 p-4 bg-primary/10 rounded-lg border border-primary/20">
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">Totalt att betala:</span>
-                  <span className="text-2xl font-bold text-primary">{getServicePrice(formData.service)}kr</span>
-                </div>
-              </div>
-            )}
           </div>
 
           <div>
@@ -260,21 +249,54 @@ const BookingForm = () => {
             />
           </div>
 
-          <Button 
-            type="submit"
-            size="lg" 
-            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold h-12 mt-2"
-            disabled={loading}
-          >
-            {loading ? (
-              <>
-                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                Skickar...
-              </>
-            ) : (
-              "Bekräfta bokning"
-            )}
-          </Button>
+          {/* Checkout-style total at bottom */}
+          {formData.service && (
+            <div className="sticky bottom-0 -mx-6 -mb-6 mt-4 p-4 bg-card border-t-2 border-primary rounded-b-lg">
+              <div className="flex justify-between items-center mb-3">
+                <div>
+                  <p className="text-sm text-muted-foreground">Vald tjänst</p>
+                  <p className="font-medium text-foreground">{formData.service}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm text-muted-foreground">Totalt</p>
+                  <p className="text-3xl font-bold text-primary">{getServicePrice(formData.service)}kr</p>
+                </div>
+              </div>
+              <Button 
+                type="submit"
+                size="lg" 
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold h-12"
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    Skickar...
+                  </>
+                ) : (
+                  "Bekräfta bokning"
+                )}
+              </Button>
+            </div>
+          )}
+
+          {!formData.service && (
+            <Button 
+              type="submit"
+              size="lg" 
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold h-12 mt-2"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  Skickar...
+                </>
+              ) : (
+                "Bekräfta bokning"
+              )}
+            </Button>
+          )}
         </form>
       </div>
     </section>
