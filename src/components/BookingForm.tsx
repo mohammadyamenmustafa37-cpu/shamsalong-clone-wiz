@@ -10,7 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 // Swish phone number - update this with your actual Swish number
-const SWISH_NUMBER = "070-XXX XX XX";
+const SWISH_NUMBER = "123 071 15 72";
 const services = [
   { name: "Pensionär klippning (Herr)", price: 300 },
   { name: "Pensionär klippning (Dam)", price: 400 },
