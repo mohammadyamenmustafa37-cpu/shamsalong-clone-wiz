@@ -22,6 +22,8 @@ export type Database = {
           id: string
           message: string | null
           name: string
+          payment_method: string | null
+          payment_status: string | null
           phone: string
           service: string
           status: string
@@ -35,6 +37,8 @@ export type Database = {
           id?: string
           message?: string | null
           name: string
+          payment_method?: string | null
+          payment_status?: string | null
           phone: string
           service: string
           status?: string
@@ -48,6 +52,8 @@ export type Database = {
           id?: string
           message?: string | null
           name?: string
+          payment_method?: string | null
+          payment_status?: string | null
           phone?: string
           service?: string
           status?: string
