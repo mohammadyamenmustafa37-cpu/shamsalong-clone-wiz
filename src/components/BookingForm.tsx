@@ -4,10 +4,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, X, Plus } from "lucide-react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Loader2, X, Plus, Smartphone, CreditCard, Copy, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
+// Swish phone number - update this with your actual Swish number
+const SWISH_NUMBER = "070-XXX XX XX";
 const services = [
   { name: "Pensionär klippning (Herr)", price: 300 },
   { name: "Pensionär klippning (Dam)", price: 400 },
@@ -38,6 +41,8 @@ const BookingForm = () => {
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [currentService, setCurrentService] = useState("");
   const [loading, setLoading] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<"later" | "swish">("later");
+  const [copied, setCopied] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -64,6 +69,20 @@ const BookingForm = () => {
       const service = services.find(s => s.name === serviceName);
       return total + (service?.price || 0);
     }, 0);
+  };
+
+  const copySwishNumber = async () => {
+    try {
+      await navigator.clipboard.writeText(SWISH_NUMBER.replace(/-/g, "").replace(/ /g, ""));
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+      toast({
+        title: "Kopierat!",
+        description: "Swish-numret har kopierats till urklipp.",
+      });
+    } catch (err) {
+      console.error("Failed to copy:", err);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -306,6 +325,81 @@ const BookingForm = () => {
                 <div className="flex justify-between items-center pt-4 border-t-2 border-primary/20">
                   <span className="text-lg font-medium text-foreground">Totalt att betala</span>
                   <span className="text-3xl font-bold text-primary">{getTotalPrice()}kr</span>
+                </div>
+
+                {/* Payment Method Section */}
+                <div className="mt-6 pt-6 border-t border-border">
+                  <h4 className="text-base font-medium text-foreground mb-4">Välj betalningsmetod</h4>
+                  
+                  <RadioGroup 
+                    value={paymentMethod} 
+                    onValueChange={(value) => setPaymentMethod(value as "later" | "swish")}
+                    className="space-y-3"
+                  >
+                    <div className={`flex items-center space-x-3 p-4 rounded-lg border-2 transition-all cursor-pointer ${
+                      paymentMethod === "later" 
+                        ? "border-primary bg-primary/5" 
+                        : "border-border hover:border-primary/50"
+                    }`}>
+                      <RadioGroupItem value="later" id="pay-later" />
+                      <Label htmlFor="pay-later" className="flex items-center gap-3 cursor-pointer flex-1">
+                        <CreditCard className="w-5 h-5 text-muted-foreground" />
+                        <div>
+                          <p className="font-medium text-foreground">Betala på plats</p>
+                          <p className="text-sm text-muted-foreground">Betala vid ankomst till salongen</p>
+                        </div>
+                      </Label>
+                    </div>
+
+                    <div className={`flex items-start space-x-3 p-4 rounded-lg border-2 transition-all cursor-pointer ${
+                      paymentMethod === "swish" 
+                        ? "border-primary bg-primary/5" 
+                        : "border-border hover:border-primary/50"
+                    }`}>
+                      <RadioGroupItem value="swish" id="pay-swish" className="mt-1" />
+                      <Label htmlFor="pay-swish" className="flex items-start gap-3 cursor-pointer flex-1">
+                        <Smartphone className="w-5 h-5 text-muted-foreground mt-0.5" />
+                        <div className="flex-1">
+                          <p className="font-medium text-foreground">Betala nu med Swish</p>
+                          <p className="text-sm text-muted-foreground">Förskottsbetala för att säkra din tid</p>
+                        </div>
+                      </Label>
+                    </div>
+                  </RadioGroup>
+
+                  {/* Swish Payment Details */}
+                  {paymentMethod === "swish" && (
+                    <div className="mt-4 p-4 bg-muted/50 rounded-lg border border-border">
+                      <div className="flex items-center justify-center mb-3">
+                        <div className="w-12 h-12 bg-[#47b973] rounded-full flex items-center justify-center">
+                          <span className="text-white font-bold text-lg">S</span>
+                        </div>
+                      </div>
+                      <p className="text-center text-sm text-muted-foreground mb-2">
+                        Swisha <span className="font-bold text-primary">{getTotalPrice()}kr</span> till:
+                      </p>
+                      <div className="flex items-center justify-center gap-2">
+                        <span className="text-2xl font-bold text-foreground tracking-wider">
+                          {SWISH_NUMBER}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={copySwishNumber}
+                          className="p-2 hover:bg-muted rounded-md transition-colors"
+                          title="Kopiera nummer"
+                        >
+                          {copied ? (
+                            <Check className="w-5 h-5 text-green-500" />
+                          ) : (
+                            <Copy className="w-5 h-5 text-muted-foreground" />
+                          )}
+                        </button>
+                      </div>
+                      <p className="text-center text-xs text-muted-foreground mt-3">
+                        Skriv ditt namn och bokningsdatum som meddelande
+                      </p>
+                    </div>
+                  )}
                 </div>
               </>
             ) : (
