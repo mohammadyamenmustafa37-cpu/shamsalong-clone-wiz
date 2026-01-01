@@ -11,7 +11,7 @@ import {
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Loader2, Pencil, Trash2 } from "lucide-react";
+import { Loader2, Pencil, Trash2, CreditCard, Smartphone } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -53,6 +53,8 @@ interface Booking {
   message: string | null;
   status: string;
   created_at: string;
+  payment_method?: string;
+  payment_status?: string;
 }
 
 const services = [
@@ -79,6 +81,7 @@ const BookingsTable = () => {
     time: "",
     message: "",
     status: "",
+    payment_status: "",
   });
   const { toast } = useToast();
 
@@ -113,6 +116,19 @@ const BookingsTable = () => {
     }
   };
 
+  const getPaymentBadge = (booking: Booking) => {
+    const method = booking.payment_method || 'pay_later';
+    const status = booking.payment_status || 'not_required';
+    
+    if (method === 'swish') {
+      if (status === 'paid') {
+        return { variant: 'default' as const, label: 'Swish ✓', icon: Smartphone, color: 'text-green-500' };
+      }
+      return { variant: 'secondary' as const, label: 'Swish (väntar)', icon: Smartphone, color: 'text-yellow-500' };
+    }
+    return { variant: 'outline' as const, label: 'På plats', icon: CreditCard, color: 'text-muted-foreground' };
+  };
+
   const handleEdit = (booking: Booking) => {
     setSelectedBooking(booking);
     setEditForm({
@@ -121,6 +137,7 @@ const BookingsTable = () => {
       time: booking.time,
       message: booking.message || "",
       status: booking.status,
+      payment_status: booking.payment_status || "not_required",
     });
     setEditDialogOpen(true);
   };
@@ -172,6 +189,7 @@ const BookingsTable = () => {
           time: editForm.time,
           message: editForm.message,
           status: editForm.status,
+          payment_status: editForm.payment_status,
         })
         .eq('id', selectedBooking.id);
 
@@ -224,6 +242,7 @@ const BookingsTable = () => {
                   <TableHead className="text-primary">Datum</TableHead>
                   <TableHead className="text-primary">Tid</TableHead>
                   <TableHead className="text-primary">Status</TableHead>
+                  <TableHead className="text-primary">Betalning</TableHead>
                   <TableHead className="text-primary">Anteckningar</TableHead>
                   <TableHead className="text-primary">Åtgärder</TableHead>
                 </TableRow>
@@ -244,6 +263,18 @@ const BookingsTable = () => {
                       <Badge variant={getStatusBadgeVariant(booking.status)}>
                         {booking.status}
                       </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {(() => {
+                        const paymentInfo = getPaymentBadge(booking);
+                        const Icon = paymentInfo.icon;
+                        return (
+                          <Badge variant={paymentInfo.variant} className="flex items-center gap-1 w-fit">
+                            <Icon className={`h-3 w-3 ${paymentInfo.color}`} />
+                            {paymentInfo.label}
+                          </Badge>
+                        );
+                      })()}
                     </TableCell>
                     <TableCell className="max-w-xs truncate">
                       {booking.message || '-'}
@@ -305,6 +336,19 @@ const BookingsTable = () => {
                     <div className="flex justify-between">
                       <span className="text-primary font-medium">Tid:</span>
                       <span>{booking.time}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-primary font-medium">Betalning:</span>
+                      {(() => {
+                        const paymentInfo = getPaymentBadge(booking);
+                        const Icon = paymentInfo.icon;
+                        return (
+                          <Badge variant={paymentInfo.variant} className="flex items-center gap-1">
+                            <Icon className={`h-3 w-3 ${paymentInfo.color}`} />
+                            {paymentInfo.label}
+                          </Badge>
+                        );
+                      })()}
                     </div>
                     {booking.message && (
                       <div className="pt-2 border-t border-border">
@@ -414,6 +458,25 @@ const BookingsTable = () => {
                 </SelectContent>
               </Select>
             </div>
+            {selectedBooking?.payment_method === 'swish' && (
+              <div className="grid gap-2">
+                <Label htmlFor="payment_status">Betalningsstatus (Swish)</Label>
+                <Select
+                  value={editForm.payment_status}
+                  onValueChange={(value) =>
+                    setEditForm({ ...editForm, payment_status: value })
+                  }
+                >
+                  <SelectTrigger className="bg-input border-border">
+                    <SelectValue placeholder="Välj betalningsstatus" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-popover border-border">
+                    <SelectItem value="pending">Väntar på betalning</SelectItem>
+                    <SelectItem value="paid">Betald</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             <div className="grid gap-2">
               <Label htmlFor="message">Meddelande</Label>
               <Textarea

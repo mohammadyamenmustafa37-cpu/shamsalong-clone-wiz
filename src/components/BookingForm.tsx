@@ -142,6 +142,8 @@ const BookingForm = () => {
           date: formData.date,
           time: formData.time,
           message: formData.message || null,
+          payment_method: paymentMethod === "swish" ? "swish" : "pay_later",
+          payment_status: paymentMethod === "swish" ? "pending" : "not_required",
         }]);
 
       if (error) throw error;
