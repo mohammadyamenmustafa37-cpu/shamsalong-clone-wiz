@@ -9,8 +9,9 @@ import { Loader2, X, Plus, Smartphone, CreditCard, Copy, Check } from "lucide-re
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
-// Swish phone number - update this with your actual Swish number
+// Swish phone number - format: digits only for deep link
 const SWISH_NUMBER = "123 071 15 72";
+const SWISH_NUMBER_CLEAN = "1230711572";
 const services = [
   { name: "Pensionär klippning (Herr)", price: 300 },
   { name: "Pensionär klippning (Dam)", price: 400 },
@@ -73,7 +74,7 @@ const BookingForm = () => {
 
   const copySwishNumber = async () => {
     try {
-      await navigator.clipboard.writeText(SWISH_NUMBER.replace(/-/g, "").replace(/ /g, ""));
+      await navigator.clipboard.writeText(SWISH_NUMBER_CLEAN);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
       toast({
@@ -83,6 +84,34 @@ const BookingForm = () => {
     } catch (err) {
       console.error("Failed to copy:", err);
     }
+  };
+
+  const openSwishApp = () => {
+    const amount = getTotalPrice();
+    const message = `${formData.name || "Bokning"} - ${formData.date || ""}`;
+    
+    // Create Swish payment data
+    const paymentData = {
+      version: 1,
+      payee: { value: SWISH_NUMBER_CLEAN },
+      amount: { value: amount },
+      message: { value: message.substring(0, 50) } // Swish message limit
+    };
+    
+    // Base64 encode the payment data
+    const encodedData = btoa(JSON.stringify(paymentData));
+    const swishUrl = `swish://payment?data=${encodedData}`;
+    
+    // Try to open Swish app
+    window.location.href = swishUrl;
+    
+    // Show fallback message after a short delay
+    setTimeout(() => {
+      toast({
+        title: "Swish-appen öppnas",
+        description: "Om appen inte öppnades, använd numret nedan för att betala manuellt.",
+      });
+    }, 1500);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -369,35 +398,48 @@ const BookingForm = () => {
 
                   {/* Swish Payment Details */}
                   {paymentMethod === "swish" && (
-                    <div className="mt-4 p-4 bg-muted/50 rounded-lg border border-border">
-                      <div className="flex items-center justify-center mb-3">
-                        <div className="w-12 h-12 bg-[#47b973] rounded-full flex items-center justify-center">
-                          <span className="text-white font-bold text-lg">S</span>
-                        </div>
-                      </div>
-                      <p className="text-center text-sm text-muted-foreground mb-2">
-                        Swisha <span className="font-bold text-primary">{getTotalPrice()}kr</span> till:
-                      </p>
-                      <div className="flex items-center justify-center gap-2">
-                        <span className="text-2xl font-bold text-foreground tracking-wider">
-                          {SWISH_NUMBER}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={copySwishNumber}
-                          className="p-2 hover:bg-muted rounded-md transition-colors"
-                          title="Kopiera nummer"
+                    <div className="mt-4 p-5 bg-muted/50 rounded-lg border border-border">
+                      {/* Swish Button */}
+                      <button
+                        type="button"
+                        onClick={openSwishApp}
+                        className="w-full flex items-center justify-center gap-3 py-4 px-6 bg-[#47b973] hover:bg-[#3da864] text-white font-semibold rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg mb-4"
+                      >
+                        <svg 
+                          viewBox="0 0 24 24" 
+                          className="w-7 h-7"
+                          fill="currentColor"
                         >
-                          {copied ? (
-                            <Check className="w-5 h-5 text-green-500" />
-                          ) : (
-                            <Copy className="w-5 h-5 text-muted-foreground" />
-                          )}
-                        </button>
+                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
+                        </svg>
+                        <span className="text-lg">Öppna Swish & betala {getTotalPrice()}kr</span>
+                      </button>
+
+                      <div className="text-center">
+                        <p className="text-xs text-muted-foreground mb-3">
+                          Fungerar det inte? Swisha manuellt till:
+                        </p>
+                        <div className="flex items-center justify-center gap-2 bg-background/50 py-2 px-4 rounded-lg">
+                          <span className="text-lg font-bold text-foreground tracking-wider">
+                            {SWISH_NUMBER}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={copySwishNumber}
+                            className="p-1.5 hover:bg-muted rounded-md transition-colors"
+                            title="Kopiera nummer"
+                          >
+                            {copied ? (
+                              <Check className="w-4 h-4 text-green-500" />
+                            ) : (
+                              <Copy className="w-4 h-4 text-muted-foreground" />
+                            )}
+                          </button>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-2">
+                          Belopp: <span className="font-semibold">{getTotalPrice()}kr</span>
+                        </p>
                       </div>
-                      <p className="text-center text-xs text-muted-foreground mt-3">
-                        Skriv ditt namn och bokningsdatum som meddelande
-                      </p>
                     </div>
                   )}
                 </div>
