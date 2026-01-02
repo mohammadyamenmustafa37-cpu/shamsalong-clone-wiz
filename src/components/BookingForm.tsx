@@ -4,8 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Loader2, X, Plus, Smartphone, CreditCard, Copy, Check } from "lucide-react";
+import { Loader2, X, Plus, Smartphone, Copy, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -42,7 +41,6 @@ const BookingForm = () => {
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [currentService, setCurrentService] = useState("");
   const [loading, setLoading] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<"later" | "swish">("later");
   const [copied, setCopied] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -88,19 +86,10 @@ const BookingForm = () => {
 
   const openSwishApp = () => {
     const amount = getTotalPrice();
-    const message = `${formData.name || "Bokning"} - ${formData.date || ""}`;
+    const message = encodeURIComponent(`${formData.name || "Bokning"} - ${formData.date || ""}`.substring(0, 50));
     
-    // Create Swish payment data
-    const paymentData = {
-      version: 1,
-      payee: { value: SWISH_NUMBER_CLEAN },
-      amount: { value: amount },
-      message: { value: message.substring(0, 50) } // Swish message limit
-    };
-    
-    // Base64 encode the payment data
-    const encodedData = btoa(JSON.stringify(paymentData));
-    const swishUrl = `swish://payment?data=${encodedData}`;
+    // Use the simple Swish URL format that works on mobile
+    const swishUrl = `swish://payment?data={"version":1,"payee":{"value":"${SWISH_NUMBER_CLEAN}"},"amount":{"value":${amount}},"message":{"value":"${message}"}}`;
     
     // Try to open Swish app
     window.location.href = swishUrl;
@@ -142,8 +131,8 @@ const BookingForm = () => {
           date: formData.date,
           time: formData.time,
           message: formData.message || null,
-          payment_method: paymentMethod === "swish" ? "swish" : "pay_later",
-          payment_status: paymentMethod === "swish" ? "pending" : "not_required",
+          payment_method: "swish",
+          payment_status: "pending",
         }]);
 
       if (error) throw error;
@@ -358,92 +347,57 @@ const BookingForm = () => {
                   <span className="text-3xl font-bold text-primary">{getTotalPrice()}kr</span>
                 </div>
 
-                {/* Payment Method Section */}
+                {/* Swish Payment Section - Required */}
                 <div className="mt-6 pt-6 border-t border-border">
-                  <h4 className="text-base font-medium text-foreground mb-4">Välj betalningsmetod</h4>
+                  <div className="flex items-center gap-2 mb-4">
+                    <Smartphone className="w-5 h-5 text-primary" />
+                    <h4 className="text-base font-medium text-foreground">Förskottsbetalning via Swish</h4>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Betala i förskott för att bekräfta din bokning. Din tid är inte reserverad förrän betalningen är genomförd.
+                  </p>
                   
-                  <RadioGroup 
-                    value={paymentMethod} 
-                    onValueChange={(value) => setPaymentMethod(value as "later" | "swish")}
-                    className="space-y-3"
-                  >
-                    <div className={`flex items-center space-x-3 p-4 rounded-lg border-2 transition-all cursor-pointer ${
-                      paymentMethod === "later" 
-                        ? "border-primary bg-primary/5" 
-                        : "border-border hover:border-primary/50"
-                    }`}>
-                      <RadioGroupItem value="later" id="pay-later" />
-                      <Label htmlFor="pay-later" className="flex items-center gap-3 cursor-pointer flex-1">
-                        <CreditCard className="w-5 h-5 text-muted-foreground" />
-                        <div>
-                          <p className="font-medium text-foreground">Betala på plats</p>
-                          <p className="text-sm text-muted-foreground">Betala vid ankomst till salongen</p>
-                        </div>
-                      </Label>
-                    </div>
+                  <div className="p-5 bg-muted/50 rounded-lg border border-border">
+                    {/* Swish Button */}
+                    <button
+                      type="button"
+                      onClick={openSwishApp}
+                      className="w-full flex items-center justify-center gap-3 py-4 px-6 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg mb-4"
+                    >
+                      <img 
+                        src="https://www.swish.nu/content/dam/images/swish/swish-icon.svg" 
+                        alt="Swish" 
+                        className="w-7 h-7"
+                      />
+                      <span className="text-lg">Öppna Swish & betala {getTotalPrice()}kr</span>
+                    </button>
 
-                    <div className={`flex items-start space-x-3 p-4 rounded-lg border-2 transition-all cursor-pointer ${
-                      paymentMethod === "swish" 
-                        ? "border-primary bg-primary/5" 
-                        : "border-border hover:border-primary/50"
-                    }`}>
-                      <RadioGroupItem value="swish" id="pay-swish" className="mt-1" />
-                      <Label htmlFor="pay-swish" className="flex items-start gap-3 cursor-pointer flex-1">
-                        <Smartphone className="w-5 h-5 text-muted-foreground mt-0.5" />
-                        <div className="flex-1">
-                          <p className="font-medium text-foreground">Betala nu med Swish</p>
-                          <p className="text-sm text-muted-foreground">Förskottsbetala för att säkra din tid</p>
-                        </div>
-                      </Label>
-                    </div>
-                  </RadioGroup>
-
-                  {/* Swish Payment Details */}
-                  {paymentMethod === "swish" && (
-                    <div className="mt-4 p-5 bg-muted/50 rounded-lg border border-border">
-                      {/* Swish Button */}
-                      <button
-                        type="button"
-                        onClick={openSwishApp}
-                        className="w-full flex items-center justify-center gap-3 py-4 px-6 bg-[#47b973] hover:bg-[#3da864] text-white font-semibold rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg mb-4"
-                      >
-                        <svg 
-                          viewBox="0 0 24 24" 
-                          className="w-7 h-7"
-                          fill="currentColor"
+                    <div className="text-center">
+                      <p className="text-xs text-muted-foreground mb-3">
+                        Fungerar det inte? Swisha manuellt till:
+                      </p>
+                      <div className="flex items-center justify-center gap-2 bg-background/50 py-2 px-4 rounded-lg">
+                        <span className="text-lg font-bold text-foreground tracking-wider">
+                          {SWISH_NUMBER}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={copySwishNumber}
+                          className="p-1.5 hover:bg-muted rounded-md transition-colors"
+                          title="Kopiera nummer"
                         >
-                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
-                        </svg>
-                        <span className="text-lg">Öppna Swish & betala {getTotalPrice()}kr</span>
-                      </button>
-
-                      <div className="text-center">
-                        <p className="text-xs text-muted-foreground mb-3">
-                          Fungerar det inte? Swisha manuellt till:
-                        </p>
-                        <div className="flex items-center justify-center gap-2 bg-background/50 py-2 px-4 rounded-lg">
-                          <span className="text-lg font-bold text-foreground tracking-wider">
-                            {SWISH_NUMBER}
-                          </span>
-                          <button
-                            type="button"
-                            onClick={copySwishNumber}
-                            className="p-1.5 hover:bg-muted rounded-md transition-colors"
-                            title="Kopiera nummer"
-                          >
-                            {copied ? (
-                              <Check className="w-4 h-4 text-green-500" />
-                            ) : (
-                              <Copy className="w-4 h-4 text-muted-foreground" />
-                            )}
-                          </button>
-                        </div>
-                        <p className="text-xs text-muted-foreground mt-2">
-                          Belopp: <span className="font-semibold">{getTotalPrice()}kr</span>
-                        </p>
+                          {copied ? (
+                            <Check className="w-4 h-4 text-green-500" />
+                          ) : (
+                            <Copy className="w-4 h-4 text-muted-foreground" />
+                          )}
+                        </button>
                       </div>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Belopp: <span className="font-semibold">{getTotalPrice()}kr</span>
+                      </p>
                     </div>
-                  )}
+                  </div>
                 </div>
               </>
             ) : (
