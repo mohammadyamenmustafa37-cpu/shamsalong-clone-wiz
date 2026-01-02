@@ -26,9 +26,9 @@ const Hero = () => {
           Expertis i varje klipp
         </h1>
         <p className="text-base md:text-lg text-muted-foreground mb-10 max-w-xl mx-auto leading-relaxed">
-          Vi här på <span className="text-primary">Shamsalong</span> erbjuder de bästa frisyrerna 
-          du kommer någonsin att få. Inga kompromisser får ske och du som kund ska ha det bästa. 
-          Vår salong ligger på <span className="text-primary">Esplanaden 1B</span> Oxelösund.
+          Sen vi etablerats 2017, så har vi på <span className="text-primary">Shamsalong</span> fixat 
+          de bästa frisyrerna i Oxelösund med precision och noggrannhet, och vårt nöje är att du som 
+          kund har en bra upplevelse och stil. Du hittar oss på <span className="text-primary">Esplanaden 1B, Oxelösund</span>. Välkommen!
         </p>
         <Button 
           onClick={scrollToBooking}
