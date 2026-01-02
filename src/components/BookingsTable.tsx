@@ -91,10 +91,11 @@ const BookingsTable = () => {
 
   const fetchBookings = async () => {
     try {
-      // Use type assertion to bypass TypeScript error until types are regenerated
+      // Only fetch bookings that have been prepaid via Swish
       const { data, error } = await (supabase as any)
         .from('bookings')
         .select('*')
+        .eq('payment_status', 'paid')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
