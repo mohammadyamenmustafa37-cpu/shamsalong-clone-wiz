@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Facebook, MapPin } from "lucide-react";
+import { Facebook, MapPin, Phone } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -8,6 +8,13 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           {/* Social Media Icons - Bottom Left */}
           <div className="flex items-center gap-4">
+            <a
+              href="tel:0793488688"
+              className="text-muted-foreground hover:text-primary transition-colors"
+              aria-label="Ring oss"
+            >
+              <Phone className="w-5 h-5" />
+            </a>
             <a
               href="https://maps.app.goo.gl/ZBQjbjvQxJPFvr8y8?g_st=com.google.maps.preview.copy"
               target="_blank"
