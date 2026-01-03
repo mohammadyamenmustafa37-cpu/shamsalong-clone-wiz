@@ -37,13 +37,6 @@ const Hero = () => {
         >
           Boka nu
         </Button>
-        
-        {/* Opening Hours */}
-        <div className="mt-8 inline-flex items-center gap-3 bg-card/80 backdrop-blur-sm px-6 py-3 rounded-full border border-border">
-          <span className="text-primary font-semibold">Öppet alla dagar</span>
-          <span className="text-muted-foreground">|</span>
-          <span className="text-foreground font-medium">10:00 – 19:00</span>
-        </div>
       </div>
     </section>
   );
