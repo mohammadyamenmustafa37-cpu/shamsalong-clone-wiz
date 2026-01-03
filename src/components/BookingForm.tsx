@@ -4,13 +4,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, X, Plus, Smartphone, Copy, Check } from "lucide-react";
+import { Loader2, X, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-
-// Swish phone number - format: digits only for deep link
-const SWISH_NUMBER = "123 071 15 72";
-const SWISH_NUMBER_CLEAN = "1230711572";
 const services = [
   { name: "Pensionär klippning (Herr)", price: 300 },
   { name: "Pensionär klippning (Dam)", price: 400 },
@@ -41,7 +37,6 @@ const BookingForm = () => {
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [currentService, setCurrentService] = useState("");
   const [loading, setLoading] = useState(false);
-  const [copied, setCopied] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -68,39 +63,6 @@ const BookingForm = () => {
       const service = services.find(s => s.name === serviceName);
       return total + (service?.price || 0);
     }, 0);
-  };
-
-  const copySwishNumber = async () => {
-    try {
-      await navigator.clipboard.writeText(SWISH_NUMBER_CLEAN);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-      toast({
-        title: "Kopierat!",
-        description: "Swish-numret har kopierats till urklipp.",
-      });
-    } catch (err) {
-      console.error("Failed to copy:", err);
-    }
-  };
-
-  const openSwishApp = () => {
-    const amount = getTotalPrice();
-    const message = encodeURIComponent(`${formData.name || "Bokning"} - ${formData.date || ""}`.substring(0, 50));
-    
-    // Use the simple Swish URL format that works on mobile
-    const swishUrl = `swish://payment?data={"version":1,"payee":{"value":"${SWISH_NUMBER_CLEAN}"},"amount":{"value":${amount}},"message":{"value":"${message}"}}`;
-    
-    // Try to open Swish app
-    window.location.href = swishUrl;
-    
-    // Show fallback message after a short delay
-    setTimeout(() => {
-      toast({
-        title: "Swish-appen öppnas",
-        description: "Om appen inte öppnades, använd numret nedan för att betala manuellt.",
-      });
-    }, 1500);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -131,7 +93,7 @@ const BookingForm = () => {
           date: formData.date,
           time: formData.time,
           message: formData.message || null,
-          payment_method: "swish",
+          payment_method: "store",
           payment_status: "pending",
         }]);
 
@@ -347,57 +309,11 @@ const BookingForm = () => {
                   <span className="text-3xl font-bold text-primary">{getTotalPrice()}kr</span>
                 </div>
 
-                {/* Swish Payment Section - Required */}
-                <div className="mt-6 pt-6 border-t border-border">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Smartphone className="w-5 h-5 text-primary" />
-                    <h4 className="text-base font-medium text-foreground">Förskottsbetalning via Swish</h4>
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Betala i förskott för att bekräfta din bokning. Din tid är inte reserverad förrän betalningen är genomförd.
+                {/* Pay at store notice */}
+                <div className="mt-4 p-4 bg-muted/50 rounded-lg border border-border">
+                  <p className="text-sm text-muted-foreground text-center">
+                    💳 Betalning sker i butiken vid ditt besök
                   </p>
-                  
-                  <div className="p-5 bg-muted/50 rounded-lg border border-border">
-                    {/* Swish Button */}
-                    <button
-                      type="button"
-                      onClick={openSwishApp}
-                      className="w-full flex items-center justify-center gap-3 py-4 px-6 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg mb-4"
-                    >
-                      <img 
-                        src="https://www.swish.nu/content/dam/images/swish/swish-icon.svg" 
-                        alt="Swish" 
-                        className="w-7 h-7"
-                      />
-                      <span className="text-lg">Öppna Swish & betala {getTotalPrice()}kr</span>
-                    </button>
-
-                    <div className="text-center">
-                      <p className="text-xs text-muted-foreground mb-3">
-                        Fungerar det inte? Swisha manuellt till:
-                      </p>
-                      <div className="flex items-center justify-center gap-2 bg-background/50 py-2 px-4 rounded-lg">
-                        <span className="text-lg font-bold text-foreground tracking-wider">
-                          {SWISH_NUMBER}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={copySwishNumber}
-                          className="p-1.5 hover:bg-muted rounded-md transition-colors"
-                          title="Kopiera nummer"
-                        >
-                          {copied ? (
-                            <Check className="w-4 h-4 text-green-500" />
-                          ) : (
-                            <Copy className="w-4 h-4 text-muted-foreground" />
-                          )}
-                        </button>
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-2">
-                        Belopp: <span className="font-semibold">{getTotalPrice()}kr</span>
-                      </p>
-                    </div>
-                  </div>
                 </div>
               </>
             ) : (
