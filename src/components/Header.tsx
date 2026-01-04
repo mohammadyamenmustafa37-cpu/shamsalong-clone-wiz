@@ -13,9 +13,7 @@ const Header = () => {
     <header className="fixed top-0 left-0 right-0 z-50 py-5 px-6 md:px-8 bg-background border-b border-border/50">
       <div className="max-w-6xl mx-auto flex items-center justify-between">
         <Link to="/" className="group flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full overflow-hidden bg-[hsl(var(--background))]">
-            <img src={logo} alt="Shamsalong logo" className="w-full h-full object-contain mix-blend-multiply dark:mix-blend-screen dark:invert" />
-          </div>
+          <img src={logo} alt="Shamsalong logo" className="w-10 h-10 rounded-full object-contain bg-background" />
           <span className="font-display text-2xl md:text-3xl font-semibold text-primary">
             Shamsalong
           </span>
