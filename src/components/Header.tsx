@@ -2,7 +2,7 @@ import { LogIn, LogOut, Settings, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/components/AuthProvider";
 import { Link, useLocation } from "react-router-dom";
-import logo from "@/assets/shamsalong-logo.jpeg";
+import logo from "@/assets/shamsalong-logo.png";
 
 const Header = () => {
   const { user, signOut } = useAuth();
