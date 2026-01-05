@@ -119,8 +119,9 @@ const BookingManagement = () => {
       }
 
       if (data?.sessionToken) {
-        setSessionToken(data.sessionToken);
-        await fetchBookings();
+        const token = String(data.sessionToken);
+        setSessionToken(token);
+        await fetchBookings(token);
         setStep('bookings');
         toast({
           title: "Verifierad!",
@@ -139,27 +140,33 @@ const BookingManagement = () => {
     }
   };
 
-  const fetchBookings = async () => {
+  const fetchBookings = async (token?: string) => {
     try {
+      const tokenToUse = token ?? sessionToken;
+      if (!tokenToUse) {
+        throw new Error("Sessionen har gått ut. Vänligen verifiera igen.");
+      }
+
       const { data, error } = await supabase.functions.invoke('manage-booking', {
         body: {
           action: 'search',
-          email: email.trim().toLowerCase()
+          email: email.trim().toLowerCase(),
+          sessionToken: tokenToUse,
         }
       });
 
       if (error) throw error;
-      
+
       if (data?.error) {
         throw new Error(data.error);
       }
 
       setBookings(data?.bookings || []);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching bookings:', error);
       toast({
         title: "Fel",
-        description: "Kunde inte hämta bokningar. Försök igen senare.",
+        description: error.message || "Kunde inte hämta bokningar. Försök igen senare.",
         variant: "destructive",
       });
     }
@@ -189,6 +196,7 @@ const BookingManagement = () => {
         body: {
           action: 'update',
           email: email.trim().toLowerCase(),
+          sessionToken,
           bookingId,
           updates: editForm
         }
@@ -236,6 +244,7 @@ const BookingManagement = () => {
         body: {
           action: 'delete',
           email: email.trim().toLowerCase(),
+          sessionToken,
           bookingId
         }
       });
