@@ -1,13 +1,12 @@
 import { Link } from "react-router-dom";
 import { Facebook, MapPin, Phone } from "lucide-react";
-import logo from "@/assets/shamsalong-logo.png";
 
 const Footer = () => {
   return (
     <footer className="bg-background border-t border-border/50 py-6 px-6 md:px-8">
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          {/* Social Media Icons - Left */}
+          {/* Social Media Icons - Bottom Left */}
           <div className="flex items-center gap-4">
             <a
               href="tel:0793488688"
@@ -36,17 +35,17 @@ const Footer = () => {
             </a>
           </div>
 
-          {/* Center Content */}
+          {/* Center/Right Content */}
           <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-6">
             <div className="flex gap-6 text-sm">
-              <Link
-                to="/privacy-policy"
+              <Link 
+                to="/privacy-policy" 
                 className="text-muted-foreground hover:text-primary transition-colors"
               >
                 Integritetspolicy
               </Link>
-              <Link
-                to="/terms-of-service"
+              <Link 
+                to="/terms-of-service" 
                 className="text-muted-foreground hover:text-primary transition-colors"
               >
                 Användarvillkor
@@ -55,18 +54,6 @@ const Footer = () => {
             <p className="text-muted-foreground text-sm">
               © 2025 Shamsalong. All rights reserved.
             </p>
-          </div>
-
-          {/* Logo - Right */}
-          <div className="flex items-center justify-start md:justify-end">
-            <div className="w-10 h-10 rounded-full bg-background flex items-center justify-center overflow-hidden">
-              <img
-                src={logo}
-                alt="Shamsalong logo"
-                className="w-8 h-8 object-contain"
-                loading="lazy"
-              />
-            </div>
           </div>
         </div>
       </div>

@@ -82,33 +82,32 @@ const BookingForm = () => {
     
     try {
       const serviceString = selectedServices.join(", ");
-
-      const { data, error } = await supabase.functions.invoke('create-booking', {
-        body: {
+      
+      const { error } = await supabase
+        .from('bookings')
+        .insert([{
           name: formData.name,
           email: formData.email,
           phone: formData.phone,
-          services: selectedServices,
+          service: serviceString,
           date: formData.date,
           time: formData.time,
           message: formData.message || null,
-        }
-      });
+          payment_method: "store",
+          payment_status: "pending",
+        }]);
 
       if (error) throw error;
-      if (data?.error) throw new Error(data.error);
 
       // Try to send notification (non-blocking)
       supabase.functions.invoke('send-booking-notification', {
         body: {
-          customer_name: formData.name,
-          customer_email: formData.email,
-          customer_phone: formData.phone,
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
           service: serviceString,
-          preferred_date: formData.date,
-          preferred_time: formData.time,
-          notes: formData.message || undefined,
-          status: 'pending',
+          date: formData.date,
+          time: formData.time,
         }
       }).catch(err => console.error('Error sending notification:', err));
 

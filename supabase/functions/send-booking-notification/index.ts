@@ -9,43 +9,16 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Accept both the newer structured payload and the legacy client payload.
-const structuredSchema = z.object({
+// Input validation schema
+const bookingNotificationSchema = z.object({
   customer_name: z.string().min(1).max(100),
   customer_email: z.string().email().max(255),
   customer_phone: z.string().max(20).optional(),
-  service: z.string().min(1).max(500),
+  service: z.string().min(1).max(100),
   preferred_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format'),
   preferred_time: z.string().regex(/^\d{2}:\d{2}$/, 'Invalid time format'),
-  notes: z.string().max(1000).optional(),
+  notes: z.string().max(500).optional(),
   status: z.string().max(50),
-});
-
-const legacySchema = z.object({
-  name: z.string().min(1).max(100),
-  email: z.string().email().max(255),
-  phone: z.string().max(20).optional(),
-  service: z.string().min(1).max(500),
-  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format'),
-  time: z.string().regex(/^\d{2}:\d{2}$/, 'Invalid time format'),
-  message: z.string().max(1000).optional(),
-});
-
-const bookingNotificationSchema = z.union([structuredSchema, legacySchema]).transform((input) => {
-  if ('customer_name' in input) {
-    return input;
-  }
-
-  return {
-    customer_name: input.name,
-    customer_email: input.email,
-    customer_phone: input.phone,
-    service: input.service,
-    preferred_date: input.date,
-    preferred_time: input.time,
-    notes: input.message,
-    status: 'pending',
-  };
 });
 
 // Simple in-memory rate limiting
@@ -53,35 +26,43 @@ const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 
 function getClientIP(req: Request): string {
   const forwardedFor = req.headers.get('x-forwarded-for');
-  if (forwardedFor) return forwardedFor.split(',')[0].trim();
+  if (forwardedFor) {
+    return forwardedFor.split(',')[0].trim();
+  }
   const realIP = req.headers.get('x-real-ip');
-  if (realIP) return realIP;
+  if (realIP) {
+    return realIP;
+  }
   return 'unknown';
 }
 
 function checkRateLimit(ip: string, maxRequests: number = 5, windowMs: number = 3600000): { allowed: boolean; remaining: number } {
   const now = Date.now();
   const record = rateLimitMap.get(ip);
-
+  
+  // Clean up old entries periodically
   if (rateLimitMap.size > 10000) {
     for (const [key, value] of rateLimitMap.entries()) {
-      if (value.resetTime < now) rateLimitMap.delete(key);
+      if (value.resetTime < now) {
+        rateLimitMap.delete(key);
+      }
     }
   }
-
+  
   if (!record || record.resetTime < now) {
     rateLimitMap.set(ip, { count: 1, resetTime: now + windowMs });
     return { allowed: true, remaining: maxRequests - 1 };
   }
-
+  
   if (record.count >= maxRequests) {
     return { allowed: false, remaining: 0 };
   }
-
+  
   record.count++;
   return { allowed: true, remaining: maxRequests - record.count };
 }
 
+// HTML escape function to prevent XSS in email content
 function escapeHtml(text: string): string {
   const map: Record<string, string> = {
     '&': '&amp;',
@@ -99,40 +80,49 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    // Rate limiting check
     const clientIP = getClientIP(req);
-    const rateLimit = checkRateLimit(clientIP, 5, 3600000);
-
+    const rateLimit = checkRateLimit(clientIP, 5, 3600000); // 5 emails per hour per IP
+    
     if (!rateLimit.allowed) {
-      return new Response(JSON.stringify({ error: 'Too many requests. Please try again later.' }), {
-        status: 429,
-        headers: {
-          ...corsHeaders,
-          'Content-Type': 'application/json',
-          'Retry-After': '3600'
+      console.log(`[send-booking-notification] Rate limit exceeded for IP: ${clientIP}`);
+      return new Response(
+        JSON.stringify({ error: 'Too many requests. Please try again later.' }),
+        { 
+          status: 429, 
+          headers: { 
+            ...corsHeaders, 
+            'Content-Type': 'application/json',
+            'Retry-After': '3600'
+          } 
         }
-      });
+      );
     }
 
     const body = await req.json();
-
+    
+    // Validate input
     const parseResult = bookingNotificationSchema.safeParse(body);
     if (!parseResult.success) {
       console.log('[send-booking-notification] Invalid input:', parseResult.error.errors);
-      return new Response(JSON.stringify({ error: 'Invalid booking data' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
+      return new Response(
+        JSON.stringify({ error: 'Invalid booking data' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
-
+    
     const booking = parseResult.data;
+    console.log(`[send-booking-notification] Processing notification for IP: ${clientIP}`);
 
-    const bookingDate = new Date(booking.preferred_date).toLocaleDateString('sv-SE', {
+    // Format the date and time for better readability
+    const bookingDate = new Date(booking.preferred_date).toLocaleDateString('en-US', {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
       day: 'numeric'
     });
 
+    // Escape all user-provided content for HTML email
     const safeName = escapeHtml(booking.customer_name);
     const safeEmail = escapeHtml(booking.customer_email);
     const safePhone = booking.customer_phone ? escapeHtml(booking.customer_phone) : null;
@@ -141,19 +131,17 @@ const handler = async (req: Request): Promise<Response> => {
     const safeStatus = escapeHtml(booking.status);
     const safeNotes = booking.notes ? escapeHtml(booking.notes) : null;
 
-    const origin = req.headers.get('origin') || '';
-    const adminLink = origin ? `${origin}/admin` : null;
-
+    // Send email notification to admin
     const emailResponse = await resend.emails.send({
       from: "Sham Salong <onboarding@resend.dev>",
-      to: ["admin@shamsalong.com"],
+      to: ["admin@shamsalong.com"], // Replace with your actual admin email
       subject: `New Booking: ${safeName} - ${safeService}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h1 style="color: #333; border-bottom: 2px solid #4CAF50; padding-bottom: 10px;">
             New Booking Received
           </h1>
-
+          
           <div style="background-color: #f9f9f9; padding: 20px; border-radius: 5px; margin: 20px 0;">
             <h2 style="color: #4CAF50; margin-top: 0;">Customer Information</h2>
             <p><strong>Name:</strong> ${safeName}</p>
@@ -170,28 +158,31 @@ const handler = async (req: Request): Promise<Response> => {
             ${safeNotes ? `<p><strong>Notes:</strong> ${safeNotes}</p>` : ''}
           </div>
 
-          ${adminLink ? `
-            <p style="color: #666; font-size: 14px; margin-top: 30px;">
-              Manage this booking in your <a href="${adminLink}" style="color: #4CAF50;">admin panel</a>.
-            </p>
-          ` : ''}
+          <p style="color: #666; font-size: 14px; margin-top: 30px;">
+            You can manage this booking in your <a href="https://fd69bbea-2926-4f47-a55c-a234f0c3dfb8.lovableproject.com/admin" style="color: #4CAF50;">admin panel</a>.
+          </p>
         </div>
       `,
     });
 
+    console.log("[send-booking-notification] Email sent successfully:", emailResponse);
+
     return new Response(JSON.stringify(emailResponse), {
       status: 200,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         ...corsHeaders,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("[send-booking-notification] Error:", error);
-    return new Response(JSON.stringify({ error: 'Unable to process request' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json', ...corsHeaders },
-    });
+    return new Response(
+      JSON.stringify({ error: 'Unable to process request' }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      }
+    );
   }
 };
 
