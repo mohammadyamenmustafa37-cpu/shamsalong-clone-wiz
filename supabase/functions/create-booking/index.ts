@@ -108,7 +108,7 @@ Deno.serve(async (req) => {
         time: input.time,
         message: input.message ?? null,
         status: 'pending',
-        payment_method: 'store',
+        payment_method: 'pay_later',
         payment_status: 'pending',
       })
       .select('id')

@@ -23,6 +23,15 @@ const Features = () => {
   return (
     <section className="px-6 py-16 md:py-24 bg-background">
       <div className="max-w-5xl mx-auto">
+        {/* Opening Hours */}
+        <div className="flex justify-center mb-10">
+          <div className="inline-flex items-center gap-3 bg-card/80 backdrop-blur-sm px-6 py-3 rounded-full border border-border">
+            <span className="text-primary font-semibold">Öppet alla dagar</span>
+            <span className="text-muted-foreground">|</span>
+            <span className="text-foreground font-medium">10:00 – 19:00</span>
+          </div>
+        </div>
+        
         <div className="grid md:grid-cols-3 gap-6">
           {features.map((feature, index) => (
             <Card 
