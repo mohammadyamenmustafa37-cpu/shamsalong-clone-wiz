@@ -4,9 +4,21 @@ import logo from "@/assets/shamsalong-logo.png";
 
 const Footer = () => {
   return (
-    <footer className="bg-background border-t border-border/50 py-6 px-6 md:px-8">
+    <footer className="bg-background border-t border-border/50 py-6 px-6 md:px-8 relative">
+      {/* Logo - Top Right Corner */}
+      <div className="absolute top-4 right-6 md:right-8">
+        <div className="w-10 h-10 rounded-full bg-background flex items-center justify-center overflow-hidden">
+          <img
+            src={logo}
+            alt="Shamsalong logo"
+            className="w-8 h-8 object-contain"
+            loading="lazy"
+          />
+        </div>
+      </div>
+
       <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pr-14 md:pr-16">
           {/* Social Media Icons - Left */}
           <div className="flex items-center gap-4">
             <a
@@ -57,17 +69,6 @@ const Footer = () => {
             </p>
           </div>
 
-          {/* Logo - Right */}
-          <div className="flex items-center justify-start md:justify-end">
-            <div className="w-10 h-10 rounded-full bg-background flex items-center justify-center overflow-hidden">
-              <img
-                src={logo}
-                alt="Shamsalong logo"
-                className="w-8 h-8 object-contain"
-                loading="lazy"
-              />
-            </div>
-          </div>
         </div>
       </div>
     </footer>
