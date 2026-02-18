@@ -2,7 +2,6 @@ import { LogIn, LogOut, Settings, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/components/AuthProvider";
 import { Link, useLocation } from "react-router-dom";
-import logo from "@/assets/shamsalong-logo.png";
 
 const Header = () => {
   const { user, signOut } = useAuth();
@@ -13,9 +12,6 @@ const Header = () => {
     <header className="fixed top-0 left-0 right-0 z-50 py-5 px-6 md:px-8 bg-background border-b border-border/50">
       <div className="max-w-6xl mx-auto flex items-center justify-between">
         <Link to="/" className="group flex items-center gap-3">
-          <div className="w-12 h-12 rounded-full bg-background flex items-center justify-center overflow-hidden -my-1">
-            <img src={logo} alt="Shamsalong logo" className="w-10 h-10 object-contain" />
-          </div>
           <span className="font-display text-2xl md:text-3xl font-semibold text-primary">
             Shamsalong
           </span>
